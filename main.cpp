@@ -9,6 +9,7 @@
 #include "control.hpp"
 #include "main.hpp"
 #include "player.hpp"
+#include "render.hpp"
 
 SDL_Window *window;
 SDL_Texture *texture;
@@ -221,7 +222,7 @@ int main(int argc, char** argv)
 
 
 
-        // Horizontal collision ////////////////////////////////////////////////////////////////
+        // Ray collision ////////////////////////////////////////////////////////////////
 
 		SDL_SetRenderDrawColor(renderer, 0x00, 0xff, 0xff, 0xff);
 
@@ -231,21 +232,37 @@ int main(int argc, char** argv)
                             .y = player.getY()};
 
         pointInt C;
-        enum collision_ray_type colliType = collisioRayCheck (P, player.getAlpha(), map, &C);
 
-        if (colliType != COLLISION_RAY_NONE)
-            SDL_RenderDrawLine( renderer,
-                player.getX(),
-                player.getY(),
-                C.x,
-                C.y);
-        else
-            SDL_RenderDrawLine( renderer,
-                            player.getX(),
-                            player.getY(),
-                            player.getX() + cosf(player.getAlpha())*1000.f,
-                            player.getY() - sinf(player.getAlpha())*1000.f  );
+        
 
+        for (int i = 0; i < SCREEN_WIDTH / 2; i++) {
+
+            float rayAlpha = player.getAlpha() - PI / 6.f + rayRadian * (float)i;
+            if (rayAlpha < 0.f)
+                rayAlpha += PI2;
+            else if (rayAlpha > PI2)
+                rayAlpha -= PI2;
+
+            int dist = 0;
+            enum collision_ray_type colliType = collisioRayCheck (P, rayAlpha, map, &C, &dist);
+ 
+            if (colliType != COLLISION_RAY_NONE)
+                SDL_RenderDrawLine( renderer,
+                    player.getX(),
+                    player.getY(),
+                    C.x,
+                    C.y);
+            else
+                SDL_RenderDrawLine( renderer,
+                                player.getX(),
+                                player.getY(),
+                                player.getX() + cosf(rayAlpha)*1000.f,
+                                player.getY() - sinf(rayAlpha)*1000.f  );
+
+
+            renderRay(renderer, colliType, dist, i);
+
+        }
 
 		//update screen
 		SDL_RenderPresent(renderer);

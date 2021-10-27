@@ -9,7 +9,8 @@ enum collision_ray_type {
     COLLISION_RAY_VERTICAL,
 };
 
-enum collision_ray_type collisioRayCheck (pointFloat P, float rayAlpha, char map[MAP_WIDTH][MAP_HEIGHT], pointInt *C);
+enum collision_ray_type collisioRayCheck (pointFloat P, float rayAlpha, char map[MAP_WIDTH][MAP_HEIGHT], pointInt *C, int *dist);
+
 
 
 #endif
