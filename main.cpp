@@ -138,11 +138,12 @@ int main(int argc, char** argv)
     uint32_t time_cpu = 4;
     uint32_t opcode_nb = 0;
 
+    int map_scale = 1;
     SDL_Rect rect;
     rect.x = 0;
     rect.y = 0;
-    rect.w = BLOCK_SIZE;
-    rect.h = BLOCK_SIZE;
+    rect.w = BLOCK_SIZE / map_scale;
+    rect.h = BLOCK_SIZE / map_scale;
 
     // Main loop
     while(!ctrl_getQuit()) {
@@ -166,33 +167,34 @@ int main(int argc, char** argv)
         for(int i = 0; i < MAP_HEIGHT; i++) {
             for(int j = 0; j < MAP_WIDTH; j++) {
                 if(map[i][j] == '#') {
-                    rect.x = BLOCK_SIZE * j;
-                    rect.y = BLOCK_SIZE * i;
+                    rect.x = BLOCK_SIZE * j / map_scale;
+                    rect.y = BLOCK_SIZE * i / map_scale;
                     SDL_RenderFillRect(renderer, &rect);
                 }
             }
         }
 
-        // draw coloe => Gray
+        // draw color => Gray
 		SDL_SetRenderDrawColor(renderer, 0x90, 0x90, 0x90, 0xFF);
+
 
         int V1x = 0;
         int V1y = 0;
         int V2x = 0;
-        int V2y = MAP_HEIGHT * BLOCK_SIZE;
+        int V2y = MAP_HEIGHT * BLOCK_SIZE / map_scale;
         for(int i = 0; i < MAP_HEIGHT; i++) {
-            V1x = BLOCK_SIZE * i;
-            V2x = BLOCK_SIZE * i;
+            V1x = BLOCK_SIZE * i / map_scale;
+            V2x = BLOCK_SIZE * i / map_scale;
             SDL_RenderDrawLine(renderer, V1x, V1y, V2x, V2y);
         }
 
         int H1x = 0;
         int H1y = 0;
-        int H2x = MAP_WIDTH * BLOCK_SIZE;
+        int H2x = MAP_WIDTH * BLOCK_SIZE / map_scale;
         int H2y = 0;
         for(int i = 0; i < MAP_WIDTH; i++) {
-            H1y = BLOCK_SIZE * i;
-            H2y = BLOCK_SIZE * i;
+            H1y = BLOCK_SIZE * i / map_scale;
+            H2y = BLOCK_SIZE * i / map_scale;
             SDL_RenderDrawLine(renderer, H1x, H1y, H2x, H2y);
         }
         
@@ -208,19 +210,48 @@ int main(int argc, char** argv)
             playerPrev.getAlpha() != player.getAlpha())
             printf("[%s:%d] player info : (%f, %f, %f)\n",
                     __func__, __LINE__, player.getX(), player.getY(), player.getAlpha());
-        circleRGBA (renderer, player.getX(), player.getY(), 10, 0xff, 0, 0, 0xff);
+        circleRGBA (renderer, player.getX() / map_scale, player.getY() / map_scale, 10, 0xff, 0, 0, 0xff);
 
 		SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0x00, 0xff);
 
         SDL_RenderDrawLine( renderer,
-                            player.getX(),
-                            player.getY(),
-                            player.getX() + cosf(player.getAlpha())*10.f,
-                            player.getY() - sinf(player.getAlpha())*10.f  );
+                            player.getX() / map_scale,
+                            player.getY() / map_scale,
+                            (player.getX() + cosf(player.getAlpha())*10.f) / map_scale,
+                            (player.getY() - sinf(player.getAlpha())*10.f) / map_scale  );
 
         // DRAW PLAYER (END) ////////////////////////////////////////////////////////////////
 
 
+        // DRAW SKY ////////////////////////////////////////////////////////////////
+        SDL_Rect rectBg;
+        SDL_SetRenderDrawColor(renderer, 0x87, 0xCE, 0xEB, 0xFF);
+        rectBg.x = SCREEN_WIDTH / 2;
+        rectBg.y = 0;
+        rectBg.w = SCREEN_WIDTH / 2;
+        rectBg.h = SCREEN_HEIGHT / 2;
+        SDL_RenderFillRect(renderer, &rectBg);
+
+        // DRAW GRASS GRADIANT ////////////////////////////////////////////////////////////
+        int nbSubSteps = 50;
+        int gradiantStepH = SCREEN_HEIGHT / 2 / nbSubSteps;
+        int gradiantOffset = 2;
+
+        Uint8 red = 0x66 - nbSubSteps * gradiantOffset ;
+        Uint8 green = 0x8D - nbSubSteps * gradiantOffset ;
+        Uint8 blue = 0x56 - nbSubSteps * gradiantOffset ;
+
+        rectBg.h = gradiantStepH;
+        rectBg.y = SCREEN_HEIGHT / 2;
+
+        for (int i = 0; i < nbSubSteps; i++) {
+            SDL_SetRenderDrawColor(renderer, red, green, blue, 0xFF);
+            SDL_RenderFillRect(renderer, &rectBg);
+            rectBg.y += gradiantStepH;
+            red += gradiantOffset;
+            green += gradiantOffset;
+            blue += gradiantOffset;
+        }
 
         // Ray collision ////////////////////////////////////////////////////////////////
 
@@ -248,16 +279,16 @@ int main(int argc, char** argv)
  
             if (colliType != COLLISION_RAY_NONE)
                 SDL_RenderDrawLine( renderer,
-                    player.getX(),
-                    player.getY(),
-                    C.x,
-                    C.y);
+                    player.getX() / map_scale,
+                    player.getY() / map_scale,
+                    C.x / map_scale,
+                    C.y / map_scale);
             else
                 SDL_RenderDrawLine( renderer,
-                                player.getX(),
-                                player.getY(),
-                                player.getX() + cosf(rayAlpha)*1000.f,
-                                player.getY() - sinf(rayAlpha)*1000.f  );
+                                player.getX() / map_scale,
+                                player.getY() / map_scale,
+                                (player.getX() + cosf(rayAlpha)*1000.f) / map_scale,
+                                (player.getY() - sinf(rayAlpha)*1000.f)  / map_scale );
 
 
             renderRay(renderer, colliType, dist, i);

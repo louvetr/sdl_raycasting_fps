@@ -172,8 +172,8 @@ enum collision_ray_type collisioRayCheck (pointFloat P, float rayAlpha, char map
         printf("SHALL NOT HAPPEN !!!!\n");
     }
 
-    printf("Collision type : (H, V) = (%d, %d), C(%d, %d), dist(%d, %d)\n",
-            colliH, colliV, C->x, C->y, distH, distV);
+    /*printf("Collision type : (H, V) = (%d, %d), C(%d, %d), dist(%d, %d)\n",
+            colliH, colliV, C->x, C->y, distH, distV);*/
 
 
     return ret;
