@@ -36,6 +36,8 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
         return -1;
 
     int heightProjected = BLOCK_SIZE * distPlayer / dist;
+    /*if (heightProjected > SCREEN_HEIGHT)
+      heightProjected = SCREEN_HEIGHT;*/
 
     int Ya = (SCREEN_HEIGHT - heightProjected) / 2;
     int Yb = (SCREEN_HEIGHT + heightProjected) / 2;
@@ -58,8 +60,12 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 
     float ratio = (float)heightProjected / (float)textureH;
 
-    for(int i = 0; i< heightProjected; i++ ) {
-      int toDrawY = Ya + i;
+    int i = 0;
+    int toDrawY = Ya + i;
+    if (Ya < 0)
+      toDrawY = 0;
+
+    while(i< heightProjected && toDrawY < SCREEN_HEIGHT) {
       int texturePixelY = (int)((float) i / ratio);
       
       int r = pixelsWall[4 * (texturePixelY * textureW + textureX) + 2];
@@ -68,10 +74,12 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 
 		  SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
       SDL_RenderDrawPoint(renderer, X + Xoffset, toDrawY);
+      toDrawY = Ya + i;
+      i++;
     }
 
       int texturePixelY0 = (int)((float)(Ya) / ratio) / 4;
       int texturePixelYlast = (int)((float)(heightProjected-1) / ratio) / 4;
 
-    printf("draw texture: x=%d, y=[%d, %d]\n", textureX, texturePixelY0, texturePixelYlast);
+    //printf("draw texture: x=%d, y=[%d, %d]\n", textureX, texturePixelY0, texturePixelYlast);
 }
