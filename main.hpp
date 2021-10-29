@@ -2,6 +2,7 @@
 #define MAIN_H
 
 #include <errno.h>
+#include <errno.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +24,7 @@ const int SCREEN_WIDTH = /*720*/ 1280;
 const int SCREEN_HEIGHT = 720;
 
 const float FOV = PI / 3.f;     // TODO set at init
-const float rayRadian = FOV / (float) SCREEN_WIDTH;
+const float rayRadian = FOV / (float) (SCREEN_WIDTH / 2); // TODO: change when no more split screen
 
 const int distPlayer = (int)((float)(SCREEN_WIDTH / 2) / tanf(PI/6.f));
 

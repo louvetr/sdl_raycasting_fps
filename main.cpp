@@ -86,6 +86,86 @@ int SDL_init()
 	return 0;
 }
 
+SDL_Texture *textureWall = NULL;
+Uint8 *pixelsWall = NULL;
+
+/*
+Copies the pixels from a SDL2 surface.
+You should free() the returned pixels when you're done with it.
+*/
+Uint8* copySurfacePixels(
+  SDL_Surface* surface,  // surface to take pixels from
+  Uint32 pixelFormat,    // usually SDL_GetWindowPixelFormat(window)
+  SDL_Renderer* renderer,// main SDL2 renderer
+  int* width,            // stores result width
+  int* height,           // stores result height
+  int* pitch)            // stores result pitch
+{
+    Uint8* pixels = 0;
+    SDL_Surface* tmpSurface = 0;
+    SDL_Texture* texture = 0;
+    int sizeInBytes = 0;
+    void* tmpPixels = 0;
+    int tmpPitch = 0;
+
+    tmpSurface = SDL_ConvertSurfaceFormat(surface, pixelFormat, 0);
+    if (tmpSurface) {
+        texture = SDL_CreateTexture( renderer, pixelFormat,
+                                    SDL_TEXTUREACCESS_STREAMING,
+                                    tmpSurface->w, tmpSurface->h );
+        if(!texture)
+            printf("[%s:%d] SDL_CreateTexture FAILED\n", __func__, __LINE__);
+    }
+    else
+        printf("[%s:%d] SDL_ConvertSurfaceFormat FAILED\n", __func__, __LINE__);
+
+
+    if (texture) {
+        if (width)
+            *width = tmpSurface->w;
+        
+        if (height)
+            *height = tmpSurface->h;
+    
+        if (pitch)
+        *pitch = tmpSurface->pitch;
+        
+        sizeInBytes = tmpSurface->pitch * tmpSurface->h;
+        printf("[%s:%d] sizeInBytes = %d\n", __func__, __LINE__, sizeInBytes);
+        pixels = (Uint8*)malloc( sizeInBytes );
+        SDL_LockTexture( texture, 0, &tmpPixels, &tmpPitch );
+        memcpy( pixels, tmpSurface->pixels, sizeInBytes);
+        SDL_UnlockTexture( texture );
+    }
+
+    // Cleanup
+    if (texture) 
+        SDL_DestroyTexture(texture);
+
+    if (tmpSurface)
+        SDL_FreeSurface(tmpSurface);
+  
+    return pixels;
+}
+
+Uint8* getPixelsFromTextureFile (const char *path)
+{
+	SDL_Surface *surface = IMG_Load(path);
+	if (!surface) {
+		SDL_Log("[%s] Unable to load image %s! SDL_image Error: %s\n",
+			__func__,
+			path,
+			IMG_GetError());
+		return NULL;
+	}
+    Uint32 pf = SDL_GetWindowPixelFormat(window);
+    printf("pixelFormat = %d\n", pf);
+    int w=0, h=0, p=0;
+    Uint8* pixels = copySurfacePixels(surface, pf, renderer, &w, &h, &p);
+
+    return pixels;
+}
+
 void leave()
 {
 	/*SDL_DestroyTexture(texture);
@@ -128,6 +208,14 @@ int main(int argc, char** argv)
     mem_init();
     time_init();*/
 
+
+    // Load texture
+    //load_texture_from_file(textureWall, "./texture/default_brick.png");
+    pixelsWall = getPixelsFromTextureFile ("./texture/default_brick.png");
+    if(!pixelsWall) {
+        printf("getPixelsFromTextureFile ERROR\n");
+        return -1;
+    }
 
     uint8_t op_length, op_duration;
     uint32_t op_cpt = 0;
@@ -261,10 +349,7 @@ int main(int argc, char** argv)
         pointInt A, Aprev;
         pointFloat P = {    .x = player.getX(),
                             .y = player.getY()};
-
         pointInt C;
-
-        
 
         for (int i = 0; i < SCREEN_WIDTH / 2; i++) {
 
@@ -291,7 +376,8 @@ int main(int argc, char** argv)
                                 (player.getY() - sinf(rayAlpha)*1000.f)  / map_scale );
 
 
-            renderRay(renderer, colliType, dist, i);
+            //renderRay(renderer, colliType, dist, i);
+            renderRayTextured(renderer, colliType, dist, i, &C, pixelsWall);
 
         }
 
