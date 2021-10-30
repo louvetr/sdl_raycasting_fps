@@ -32,6 +32,8 @@ int renderRay(SDL_Renderer *renderer, enum collision_ray_type colliType, int dis
 int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType, int dist, int X, pointInt *C, Uint8 *pixelsWall)
 {
 
+    int tileFactor = 2;
+
     if (colliType == COLLISION_RAY_NONE)
         return -1;
 
@@ -71,10 +73,13 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 
     while(i< heightProjected && toDrawY < SCREEN_HEIGHT) {
       int texturePixelY = (int)((float) i / ratio);
-      
-      int r = pixelsWall[4 * (texturePixelY * textureW + textureX) + 2];
-      int g = pixelsWall[4 * (texturePixelY * textureW + textureX) + 1];
-      int b = pixelsWall[4 * (texturePixelY * textureW + textureX) + 0];
+      int pixelIdx = 4 * (texturePixelY * textureW + textureX);
+
+      pixelIdx = (pixelIdx * tileFactor) % (128 * 128 * 4); // store then insert here the texture size
+
+      int r = pixelsWall[pixelIdx + 2];
+      int g = pixelsWall[pixelIdx + 1];
+      int b = pixelsWall[pixelIdx + 0];
 
 		  SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
       SDL_RenderDrawPoint(renderer, X + Xoffset, toDrawY);
