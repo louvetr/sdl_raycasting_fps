@@ -2,9 +2,10 @@
 #define CONTROL_H
 
 #include <SDL2/SDL.h>
+#include "main.hpp"
 #include "player.hpp"
 
 int ctrl_getQuit();
-int ctrl_main(Player *player);
+int ctrl_main(Player *player, char map[MAP_WIDTH][MAP_HEIGHT]);
 
 #endif

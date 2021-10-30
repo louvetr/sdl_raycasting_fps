@@ -239,7 +239,7 @@ int main(int argc, char** argv)
         Player playerPrev = player;
 
         // controls management
-        ctrl_main(&player);
+        ctrl_main(&player, map);
 
 
 		// clear screen
