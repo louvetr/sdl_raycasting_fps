@@ -353,7 +353,7 @@ int main(int argc, char** argv)
 
         for (int i = 0; i < SCREEN_WIDTH / 2; i++) {
 
-            float rayAlpha = player.getAlpha() - PI / 6.f + rayRadian * (float)i;
+            float rayAlpha = player.getAlpha() + PI / 6.f - rayRadian * (float)i;
             if (rayAlpha < 0.f)
                 rayAlpha += PI2;
             else if (rayAlpha > PI2)
