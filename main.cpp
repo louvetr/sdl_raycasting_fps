@@ -21,17 +21,19 @@ int scale = 1;
 
 
 
-char map[MAP_WIDTH][MAP_HEIGHT] = {
-    {'#','#','#','#','#','#','#','#','#','#'},
-    {'#','.','.','#','#','.','.','.','.','#'},
-    {'#','.','.','#','#','.','.','.','.','#'},
-    {'#','.','.','#','#','.','.','.','.','#'},
-    {'#','.','.','.','.','.','#','#','.','#'},
-    {'#','.','.','.','.','.','#','#','.','#'},
-    {'#','#','#','.','.','.','#','#','.','#'},
-    {'#','#','#','.','.','.','#','#','.','#'},
-    {'#','#','#','.','.','.','.','.','.','#'},
-    {'#','#','#','#','#','#','#','#','#','#'}
+char map[MAP_HEIGHT][MAP_WIDTH] = {
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,3,3,0,0,0,2,2,0,0,0,0,0,1},
+    {1,0,0,3,3,0,0,0,2,2,2,2,2,0,0,1},
+    {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1},
+    {1,0,0,4,4,4,0,0,0,0,0,5,5,0,0,1},
+    {1,0,0,0,0,4,0,0,0,0,5,5,5,0,0,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     };
 
 
@@ -87,7 +89,7 @@ int SDL_init()
 }
 
 SDL_Texture *textureWall = NULL;
-Uint8 *pixelsWall = NULL;
+Uint8 *pixelsWalls[10];
 
 /*
 Copies the pixels from a SDL2 surface.
@@ -202,7 +204,7 @@ int main(int argc, char** argv)
 
     // inits
     SDL_init();
-    Player player(MAP_WIDTH * BLOCK_SIZE /2, MAP_HEIGHT*BLOCK_SIZE/2, 0);
+    Player player((MAP_WIDTH - 2) * BLOCK_SIZE /2, MAP_HEIGHT*BLOCK_SIZE/2, 0);
     /*cpu_init();
     input_init();
     mem_init();
@@ -211,8 +213,30 @@ int main(int argc, char** argv)
 
     // Load texture
     //load_texture_from_file(textureWall, "./texture/default_brick.png");
-    pixelsWall = getPixelsFromTextureFile ("./texture/default_brick.png");
-    if(!pixelsWall) {
+    pixelsWalls[0] = getPixelsFromTextureFile ("./texture/default_silver_sandstone_block.png");
+    if(!pixelsWalls[0]) {
+        printf("getPixelsFromTextureFile ERROR\n");
+        return -1;
+    }
+    pixelsWalls[1] = getPixelsFromTextureFile ("./texture/default_brick.png");
+    if(!pixelsWalls[1]) {
+        printf("getPixelsFromTextureFile ERROR\n");
+        return -1;
+    }
+    pixelsWalls[2] = getPixelsFromTextureFile ("./texture/default_stone_brick.png");
+    if(!pixelsWalls[2]) {
+        printf("getPixelsFromTextureFile ERROR\n");
+        return -1;
+    }
+
+    pixelsWalls[3] = getPixelsFromTextureFile ("./texture/default_wood.png");
+    if(!pixelsWalls[3]) {
+        printf("getPixelsFromTextureFile ERROR\n");
+        return -1;
+    }
+
+    pixelsWalls[4] = getPixelsFromTextureFile ("./texture/default_obsidian_block.png");
+    if(!pixelsWalls[4]) {
         printf("getPixelsFromTextureFile ERROR\n");
         return -1;
     }
@@ -254,7 +278,7 @@ int main(int argc, char** argv)
 
         for(int i = 0; i < MAP_HEIGHT; i++) {
             for(int j = 0; j < MAP_WIDTH; j++) {
-                if(map[i][j] == '#') {
+                if(map[i][j] > 0) {
                     rect.x = BLOCK_SIZE * j / map_scale;
                     rect.y = BLOCK_SIZE * i / map_scale;
                     SDL_RenderFillRect(renderer, &rect);
@@ -269,8 +293,8 @@ int main(int argc, char** argv)
         int V1x = 0;
         int V1y = 0;
         int V2x = 0;
-        int V2y = MAP_HEIGHT * BLOCK_SIZE / map_scale;
-        for(int i = 0; i < MAP_HEIGHT; i++) {
+        int V2y = MAP_WIDTH * BLOCK_SIZE / map_scale;
+        for(int i = 0; i < MAP_WIDTH; i++) {
             V1x = BLOCK_SIZE * i / map_scale;
             V2x = BLOCK_SIZE * i / map_scale;
             SDL_RenderDrawLine(renderer, V1x, V1y, V2x, V2y);
@@ -280,7 +304,7 @@ int main(int argc, char** argv)
         int H1y = 0;
         int H2x = MAP_WIDTH * BLOCK_SIZE / map_scale;
         int H2y = 0;
-        for(int i = 0; i < MAP_WIDTH; i++) {
+        for(int i = 0; i < MAP_HEIGHT; i++) {
             H1y = BLOCK_SIZE * i / map_scale;
             H2y = BLOCK_SIZE * i / map_scale;
             SDL_RenderDrawLine(renderer, H1x, H1y, H2x, H2y);
@@ -377,7 +401,7 @@ int main(int argc, char** argv)
 
 
             //renderRay(renderer, colliType, dist, i);
-            renderRayTextured(renderer, colliType, dist, i, &C, pixelsWall);
+            renderRayTextured(renderer, colliType, dist, i, &C, pixelsWalls[map[C.y/BLOCK_SIZE][C.x/BLOCK_SIZE]-1]);
 
         }
 

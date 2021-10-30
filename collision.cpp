@@ -2,17 +2,17 @@
 #include "collision.hpp"
 
 
-int collisionIsWall(int x, int y, char map[MAP_WIDTH][MAP_HEIGHT])
+int collisionIsWall(int x, int y, char map[MAP_HEIGHT][MAP_WIDTH])
 {
     if (x >= MAP_WIDTH || y >= MAP_HEIGHT || x < 0 || y < 0 ||
-        map[y][x] != '#')
+        map[y][x] == 0)
         return 0;
     else
         return 1;
 }
 
 // TODO: use pointInt for P
-static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_WIDTH][MAP_HEIGHT], pointInt *C, int *rayDist)
+static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointInt *C, int *rayDist)
 {
     int ret = 1;
     pointInt B, Bprev;
@@ -40,7 +40,7 @@ static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_
     // While B point is not on a wall, compute and test next block
     while (map_x >= MAP_WIDTH || map_y >= MAP_HEIGHT ||
             map_x < 0 || map_y < 0 ||
-            map[map_y][map_x] != '#') {
+            map[map_y][map_x] == 0) {
         
         Bprev = B;
 
@@ -74,7 +74,7 @@ static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_
 }
 
 
-static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MAP_WIDTH][MAP_HEIGHT], pointInt *C, int *rayDist)
+static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointInt *C, int *rayDist)
 {
     int ret = 1;
 
@@ -104,7 +104,7 @@ static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MA
     // While A point is not on a wall, compute and test next block
     while (map_x >= MAP_WIDTH || map_y >= MAP_HEIGHT ||
             map_x < 0 || map_y < 0 ||
-            map[map_y][map_x] != '#') {
+            map[map_y][map_x] == 0) {
         
         Aprev = A;
 
@@ -136,7 +136,7 @@ static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MA
     return ret;
 }
 
-enum collision_ray_type collisioRayCheck (pointFloat P, float rayAlpha, char map[MAP_WIDTH][MAP_HEIGHT], pointInt *C, int *dist)
+enum collision_ray_type collisioRayCheck (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointInt *C, int *dist)
 {
     enum collision_ray_type ret = COLLISION_RAY_NONE;
 

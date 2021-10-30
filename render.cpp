@@ -35,6 +35,10 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
     if (colliType == COLLISION_RAY_NONE)
         return -1;
 
+    //int heightProjected = SCREEN_HEIGHT;
+    if(dist <= 0)
+      return -1;
+
     int heightProjected = BLOCK_SIZE * distPlayer / dist;
     /*if (heightProjected > SCREEN_HEIGHT)
       heightProjected = SCREEN_HEIGHT;*/

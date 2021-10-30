@@ -9,18 +9,20 @@
 #include <string.h>
 #include <unistd.h>
 
-#define PI  3.141592f
-#define PI2 6.283185f
+#define PId6    0.523598f
+#define PId3    1.047197f
+#define PI      3.141592f
+#define PI2     6.283185f
 
-#define MAP_WIDTH   10
-#define MAP_HEIGHT  10
+#define MAP_WIDTH   16
+#define MAP_HEIGHT  12
 
 #define BLOCK_SIZE  64
 
 /*const int SCREEN_WIDTH_VRAM = 1024;
 const int SCREEN_HEIGHT_VRAM = 32;*/
 
-const int SCREEN_WIDTH = /*720*/ 1280;
+const int SCREEN_WIDTH = /*720*/ /*1280*/ 1920;
 const int SCREEN_HEIGHT = 720;
 
 const float FOV = PI / 3.f;     // TODO set at init

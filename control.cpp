@@ -3,14 +3,14 @@
 #include "main.hpp"
 #include "player.hpp"
 
-#define STEP_SIZE 3.f
+#define STEP_SIZE 5.f
 
 
 static int quit = 0;
 
 int ctrl_getQuit() {return quit;}
 
-int ctrl_main(Player *player, char map[MAP_WIDTH][MAP_HEIGHT])
+int ctrl_main(Player *player, char map[MAP_HEIGHT][MAP_WIDTH])
 {
     SDL_Event e;
 	int newX, newY;
@@ -33,7 +33,7 @@ int ctrl_main(Player *player, char map[MAP_WIDTH][MAP_HEIGHT])
 				oldBlockY = player->getY() / BLOCK_SIZE;
 				newX = player->getX() + cosf(player->getAlpha()) * STEP_SIZE;
 				newY = player->getY() - sinf(player->getAlpha()) * STEP_SIZE;
-				if(map[newY/BLOCK_SIZE][newX/BLOCK_SIZE] == '.') {
+				if(map[newY/BLOCK_SIZE][newX/BLOCK_SIZE] == 0) {
 	    	    	player->setX(newX);
 	    	    	player->setY(newY);
 				} 
@@ -45,7 +45,7 @@ int ctrl_main(Player *player, char map[MAP_WIDTH][MAP_HEIGHT])
 	    		//player->setY(player->getY() + 1);
 	    	    newX = player->getX() - cosf(player->getAlpha()) * STEP_SIZE;
 	    	    newY = player->getY() + sinf(player->getAlpha()) * STEP_SIZE;
-				if(map[newY/BLOCK_SIZE][newX/BLOCK_SIZE] == '.') {
+				if(map[newY/BLOCK_SIZE][newX/BLOCK_SIZE] == 0) {
 	    	    	player->setX(newX);
 	    	    	player->setY(newY);
 				}

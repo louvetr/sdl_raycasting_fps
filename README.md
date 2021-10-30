@@ -3,8 +3,6 @@ A CPP raycasting engine
 
 # TODO list
     - fish eye effect removal
-    - do not draw wall beyond screen range
-    - wall collision
     - ray collision occasional bug
     - reduce minimap
     - full screen '3D' display
@@ -27,3 +25,6 @@ A CPP raycasting engine
     - https://www.youtube.com/watch?v=gYRrGTC7GtA
 
 
+# Credits
+Textures:
+    - https://opengameart.org/content/big-pack-of-hand-painted-tiling-textures

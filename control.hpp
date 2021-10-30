@@ -6,6 +6,6 @@
 #include "player.hpp"
 
 int ctrl_getQuit();
-int ctrl_main(Player *player, char map[MAP_WIDTH][MAP_HEIGHT]);
+int ctrl_main(Player *player, char map[MAP_HEIGHT][MAP_WIDTH]);
 
 #endif
