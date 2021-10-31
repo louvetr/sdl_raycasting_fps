@@ -377,7 +377,8 @@ int main(int argc, char** argv)
 
         for (int i = 0; i < SCREEN_WIDTH / 2; i++) {
 
-            float rayAlpha = player.getAlpha() + PI / 6.f - rayRadian * (float)i;
+            float subAlpha = PI / 6.f - rayRadian * (float)i;
+            float rayAlpha = player.getAlpha() + subAlpha;
             if (rayAlpha < 0.f)
                 rayAlpha += PI2;
             else if (rayAlpha > PI2)
@@ -385,7 +386,11 @@ int main(int argc, char** argv)
 
             int dist = 0;
             enum collision_ray_type colliType = collisioRayCheck (P, rayAlpha, map, &C, &dist);
- 
+            
+            // remove fish eye effect
+            dist *= cosf(subAlpha);
+
+
             if (colliType != COLLISION_RAY_NONE)
                 SDL_RenderDrawLine( renderer,
                     player.getX() / map_scale,

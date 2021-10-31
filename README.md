@@ -2,11 +2,9 @@
 A CPP raycasting engine
 
 # TODO list
-    - fish eye effect removal
     - ray collision occasional bug
     - reduce minimap
     - full screen '3D' display
-    - tile texture management
     - floor texture
     - wall of several block height
     - map class
