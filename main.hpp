@@ -41,4 +41,7 @@ typedef struct pointFloat {
     float y;
 } _poinFloat;
 
+static inline int tan2degree(float radians)
+{   return (int)(radians * (57.2957795131)); }
+
 #endif

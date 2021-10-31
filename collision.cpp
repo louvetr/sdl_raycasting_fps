@@ -18,6 +18,12 @@ static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_
     pointInt B, Bprev;
     int Xa;
 
+    int degrees = tan2degree(rayAlpha);
+    if(degrees == 90 || degrees == 270) {
+        *rayDist = 999999999;
+        return 0;
+    }
+
     int face_east = 0;
     if(rayAlpha < PI / 2.f || rayAlpha > 3.f*PI / 2.f) {
         face_east = 1;
@@ -80,6 +86,13 @@ static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MA
 
     pointInt A, Aprev;
     int face_north = 0;
+
+    int degrees = tan2degree(rayAlpha);
+    if(degrees == 0 || degrees == 180) {
+        *rayDist = 999999999;
+        //printf("SKIP H collision since degree = %d !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n", degrees);
+        return 0;
+    }
 
     // ray faces south
     if (rayAlpha > PI) {
