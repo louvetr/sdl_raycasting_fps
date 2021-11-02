@@ -25,12 +25,16 @@ char map[MAP_HEIGHT][MAP_WIDTH] = {
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     {1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
     {1,0,0,3,3,0,0,0,2,2,0,0,0,0,0,1},
     {1,0,0,3,3,0,0,0,2,2,2,2,2,0,0,1},
     {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1},
-    {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1},
+    {1,1,0,0,0,0,0,0,2,0,0,0,0,0,0,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
     {1,0,0,4,4,4,0,0,0,0,0,5,5,0,0,1},
     {1,0,0,0,0,4,0,0,0,0,5,5,5,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
     {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1},
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -322,12 +326,12 @@ int main(int argc, char** argv)
             renderRayTextured(renderer, colliType, dist, i, &C, pixelsWalls[map[(int)C.y/BLOCK_SIZE][(int)C.x/BLOCK_SIZE]-1]);
 
             // TODO:  useless ? hidden by minimap
-            renderMinimapRay(renderer, &player, &C, subAlpha, colliType, minimap_scale);
+            //renderMinimapRay(renderer, &player, &C, subAlpha, colliType, minimap_scale);
             //printf("[i=%d] subAlpha = %f\n", i - SCREEN_WIDTH / 2, subAlpha);
 
         }
 
-        //renderMinimap(renderer, &player, map, minimap_scale);
+        renderMinimap(renderer, &player, map, minimap_scale);
 
 		//update screen
 		SDL_RenderPresent(renderer);

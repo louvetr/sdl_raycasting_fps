@@ -3,8 +3,9 @@ A CPP raycasting engine
 
 # TODO list
     - better minimap: transparancy, cone of sight
-    - blocks are rectangle instead square
-    - full screen '3D' display
+    - Wall textures top slice appears on bottom
+    - Vertical artifact line separating wall blocks
+    - Code cleaning and optimization
     - floor texture
     - wall of several block height
     - map class
@@ -16,6 +17,7 @@ A CPP raycasting engine
     - background picture with scrolling when rotating
     - strafe movement
     - look up/down
+    - free resources on exit
 
 # Documention about RayCasting
     - https://permadi.com/1996/05/ray-casting-tutorial-table-of-contents/

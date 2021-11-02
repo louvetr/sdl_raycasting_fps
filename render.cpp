@@ -41,7 +41,7 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
     if(dist <= 0)
       return -1;
 
-    int heightProjected = BLOCK_SIZE * distPlayer / dist;
+    int heightProjected = BLOCK_SIZE * distPlayer / dist / 2;
 
     int Ya = (SCREEN_HEIGHT - heightProjected) / 2;
     int Yb = (SCREEN_HEIGHT + heightProjected) / 2;
@@ -57,6 +57,8 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
       int toRemove = (int)C->y / BLOCK_SIZE;
       textureX = floor(C->y) - toRemove;
     }
+
+    textureX *= 2;
 
     int drawX, drawY;
 
@@ -75,7 +77,7 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
       int texturePixelY = (int)((float) i / ratio);
       int pixelIdx = 4 * (texturePixelY * textureW + (int)textureX);
 
-      pixelIdx = (pixelIdx * tileFactor) % (128 * 128 * 4); // store then insert here the texture size
+      pixelIdx = (pixelIdx * tileFactor) % (128 * 128 * 4); // TODO: store then insert here the texture size
 
       int r = pixelsWall[pixelIdx + 2];
       int g = pixelsWall[pixelIdx + 1];

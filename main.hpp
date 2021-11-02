@@ -15,7 +15,7 @@
 #define PI2     6.283185f
 
 #define MAP_WIDTH   16
-#define MAP_HEIGHT  12
+#define MAP_HEIGHT  16
 
 #define BLOCK_SIZE  64
 
