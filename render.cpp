@@ -1,7 +1,8 @@
+#include "player.hpp"
 #include "render.hpp"
 
 
-int Xoffset = SCREEN_WIDTH / 2;
+int Xoffset = 0; // SCREEN_WIDTH / 2;
 
 uint8_t wallColor = 0xA0;
 
@@ -92,3 +93,93 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 
     return 0;
 }
+
+
+int renderMinimap(SDL_Renderer *renderer, Player *player, char map[MAP_HEIGHT][MAP_WIDTH], Uint8 map_scale)
+{
+    Uint8 alpha = 0x05;
+
+    SDL_Rect rect;
+    rect.x = 0;
+    rect.y = 0;
+    rect.w = BLOCK_SIZE * MAP_WIDTH / map_scale;
+    rect.h = BLOCK_SIZE * MAP_HEIGHT / map_scale;
+		
+    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, alpha);
+    SDL_RenderFillRect(renderer, &rect);
+
+    rect.w = BLOCK_SIZE / map_scale;
+    rect.h = BLOCK_SIZE / map_scale;
+
+    // draw color => Blue
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, alpha);
+
+    for(int i = 0; i < MAP_HEIGHT; i++) {
+        for(int j = 0; j < MAP_WIDTH; j++) {
+            if(map[i][j] > 0) {
+                rect.x = BLOCK_SIZE * j / map_scale;
+                rect.y = BLOCK_SIZE * i / map_scale;
+                SDL_RenderFillRect(renderer, &rect);
+            }
+        }
+    }
+
+    // draw color => Gray
+		SDL_SetRenderDrawColor(renderer, 0x90, 0x90, 0x90, 0xFF);
+
+
+    int V1x = 0;
+    int V1y = 0;
+    int V2x = 0;
+    int V2y = MAP_HEIGHT * BLOCK_SIZE / map_scale;
+    for(int i = 0; i < MAP_WIDTH; i++) {
+        V1x = BLOCK_SIZE * i / map_scale;
+        V2x = BLOCK_SIZE * i / map_scale;
+        SDL_RenderDrawLine(renderer, V1x, V1y, V2x, V2y);
+    }
+
+    int H1x = 0;
+    int H1y = 0;
+    int H2x = MAP_WIDTH * BLOCK_SIZE / map_scale;
+    int H2y = 0;
+    for(int i = 0; i < MAP_HEIGHT; i++) {
+        H1y = BLOCK_SIZE * i / map_scale;
+        H2y = BLOCK_SIZE * i / map_scale;
+        SDL_RenderDrawLine(renderer, H1x, H1y, H2x, H2y);
+    }
+
+    // DRAW PLAYER ////////////////////////////////////////////////////////////////
+    circleRGBA (renderer, player->getX() / map_scale, player->getY() / map_scale, 10, 0xff, 0, 0, 0xff);
+
+		SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0x00, 0xff);
+
+    SDL_RenderDrawLine( renderer,
+                        player->getX() / map_scale,
+                        player->getY() / map_scale,
+                        (player->getX() + cosf(player->getAlpha())*10.f) / map_scale,
+                        (player->getY() - sinf(player->getAlpha())*10.f) / map_scale  );
+
+  return 0;
+}
+
+
+int renderMinimapRay(SDL_Renderer *renderer, Player *player, pointFloat *C, float rayAlpha, enum collision_ray_type colliType, Uint8 map_scale)
+{
+
+  SDL_SetRenderDrawColor(renderer, 0x00, 0xff, 0xff, 0xff);
+  if (colliType != COLLISION_RAY_NONE)
+      SDL_RenderDrawLine( renderer,
+          player->getX() / map_scale,
+          player->getY() / map_scale,
+          C->x / map_scale,
+          C->y / map_scale);
+  else
+      SDL_RenderDrawLine( renderer,
+                      player->getX() / map_scale,
+                      player->getY() / map_scale,
+                      (player->getX() + cosf(rayAlpha)*1000.f) / map_scale,
+                      (player->getY() - sinf(rayAlpha)*1000.f)  / map_scale );
+
+  return 0;
+}
+

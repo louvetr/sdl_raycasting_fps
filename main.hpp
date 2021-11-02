@@ -22,13 +22,13 @@
 /*const int SCREEN_WIDTH_VRAM = 1024;
 const int SCREEN_HEIGHT_VRAM = 32;*/
 
-const int SCREEN_WIDTH = /*720*/ /*1280*/ 1920;
+const int SCREEN_WIDTH = /*720*/ 1280 /*1920*/;
 const int SCREEN_HEIGHT = 720;
 
 const float FOV = PI / 3.f;     // TODO set at init
-const float rayRadian = FOV / (float) (SCREEN_WIDTH / 2); // TODO: change when no more split screen
+const float rayRadian = FOV / (float) (SCREEN_WIDTH /*/ 2*/); // TODO: change when no more split screen
 
-const int distPlayer = (int)((float)(SCREEN_WIDTH / 2) / tanf(PI/6.f));
+const int distPlayer = (int)((float)(SCREEN_WIDTH /*/ 2*/) / tanf(PI/6.f));
 
 
 typedef struct pointInt {

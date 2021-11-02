@@ -2,8 +2,8 @@
 A CPP raycasting engine
 
 # TODO list
-    - ray collision occasional bug when facing block angle south east
-    - reduce minimap
+    - better minimap: transparancy, cone of sight
+    - blocks are rectangle instead square
     - full screen '3D' display
     - floor texture
     - wall of several block height

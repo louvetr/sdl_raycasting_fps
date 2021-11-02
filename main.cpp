@@ -250,12 +250,7 @@ int main(int argc, char** argv)
     uint32_t time_cpu = 4;
     uint32_t opcode_nb = 0;
 
-    int map_scale = 1;
-    SDL_Rect rect;
-    rect.x = 0;
-    rect.y = 0;
-    rect.w = BLOCK_SIZE / map_scale;
-    rect.h = BLOCK_SIZE / map_scale;
+    int minimap_scale = 4;
 
     // Main loop
     while(!ctrl_getQuit()) {
@@ -265,82 +260,16 @@ int main(int argc, char** argv)
         // controls management
         ctrl_main(&player, map);
 
-
 		// clear screen
 		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(renderer);
 
-
-        // DRAW MAP ////////////////////////////////////////////////////////////////
-
-        // draw coloe => Blue
-		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
-
-        for(int i = 0; i < MAP_HEIGHT; i++) {
-            for(int j = 0; j < MAP_WIDTH; j++) {
-                if(map[i][j] > 0) {
-                    rect.x = BLOCK_SIZE * j / map_scale;
-                    rect.y = BLOCK_SIZE * i / map_scale;
-                    SDL_RenderFillRect(renderer, &rect);
-                }
-            }
-        }
-
-        // draw color => Gray
-		SDL_SetRenderDrawColor(renderer, 0x90, 0x90, 0x90, 0xFF);
-
-
-        int V1x = 0;
-        int V1y = 0;
-        int V2x = 0;
-        int V2y = MAP_WIDTH * BLOCK_SIZE / map_scale;
-        for(int i = 0; i < MAP_WIDTH; i++) {
-            V1x = BLOCK_SIZE * i / map_scale;
-            V2x = BLOCK_SIZE * i / map_scale;
-            SDL_RenderDrawLine(renderer, V1x, V1y, V2x, V2y);
-        }
-
-        int H1x = 0;
-        int H1y = 0;
-        int H2x = MAP_WIDTH * BLOCK_SIZE / map_scale;
-        int H2y = 0;
-        for(int i = 0; i < MAP_HEIGHT; i++) {
-            H1y = BLOCK_SIZE * i / map_scale;
-            H2y = BLOCK_SIZE * i / map_scale;
-            SDL_RenderDrawLine(renderer, H1x, H1y, H2x, H2y);
-        }
-        
-        // DRAW MAP (END) ////////////////////////////////////////////////////////////////
-
-
-
-
-        // DRAW PLAYER ////////////////////////////////////////////////////////////////
-
-        if( playerPrev.getX() != player.getX() ||
-            playerPrev.getY() != player.getY() ||
-            playerPrev.getAlpha() != player.getAlpha())
-            printf("[%s:%d] player info : (%f, %f, %f)\n",
-                    __func__, __LINE__, player.getX(), player.getY(), player.getAlpha());
-        circleRGBA (renderer, player.getX() / map_scale, player.getY() / map_scale, 10, 0xff, 0, 0, 0xff);
-
-		SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0x00, 0xff);
-
-        SDL_RenderDrawLine( renderer,
-                            player.getX() / map_scale,
-                            player.getY() / map_scale,
-                            (player.getX() + cosf(player.getAlpha())*10.f) / map_scale,
-                            (player.getY() - sinf(player.getAlpha())*10.f) / map_scale  );
-
-        // DRAW PLAYER (END) ////////////////////////////////////////////////////////////////
-
-
         // DRAW SKY ////////////////////////////////////////////////////////////////
         SDL_Rect rectBg;
         SDL_SetRenderDrawColor(renderer, 0x87, 0xCE, 0xEB, 0xFF);
-        rectBg.x = SCREEN_WIDTH / 2;
+        rectBg.x = 0 /*SCREEN_WIDTH / 2*/;
         rectBg.y = 0;
-        rectBg.w = SCREEN_WIDTH / 2;
+        rectBg.w = SCREEN_WIDTH /*/ 2*/;
         rectBg.h = SCREEN_HEIGHT / 2;
         SDL_RenderFillRect(renderer, &rectBg);
 
@@ -374,7 +303,7 @@ int main(int argc, char** argv)
                             .y = player.getY()};
         pointFloat C;
 
-        for (int i = 0; i < SCREEN_WIDTH / 2; i++) {
+        for (int i = 0; i < SCREEN_WIDTH /*/ 2*/; i++) {
 
             float subAlpha = PI / 6.f - rayRadian * (float)i;
             float rayAlpha = player.getAlpha() + subAlpha;
@@ -389,30 +318,21 @@ int main(int argc, char** argv)
             // remove fish eye effect
             dist *= cosf(subAlpha);
 
-
-            if (colliType != COLLISION_RAY_NONE)
-                SDL_RenderDrawLine( renderer,
-                    player.getX() / map_scale,
-                    player.getY() / map_scale,
-                    C.x / map_scale,
-                    C.y / map_scale);
-            else
-                SDL_RenderDrawLine( renderer,
-                                player.getX() / map_scale,
-                                player.getY() / map_scale,
-                                (player.getX() + cosf(rayAlpha)*1000.f) / map_scale,
-                                (player.getY() - sinf(rayAlpha)*1000.f)  / map_scale );
-
-
             //renderRay(renderer, colliType, dist, i);
             renderRayTextured(renderer, colliType, dist, i, &C, pixelsWalls[map[(int)C.y/BLOCK_SIZE][(int)C.x/BLOCK_SIZE]-1]);
+
+            // TODO:  useless ? hidden by minimap
+            renderMinimapRay(renderer, &player, &C, subAlpha, colliType, minimap_scale);
             //printf("[i=%d] subAlpha = %f\n", i - SCREEN_WIDTH / 2, subAlpha);
 
         }
 
+        //renderMinimap(renderer, &player, map, minimap_scale);
+
 		//update screen
 		SDL_RenderPresent(renderer);
 
+        // TODO: smooth timing with delta % frame compute time
 		SDL_Delay(1000 / 30);
     }
 
