@@ -370,10 +370,9 @@ int main(int argc, char** argv)
 		SDL_SetRenderDrawColor(renderer, 0x00, 0xff, 0xff, 0xff);
 
         float rayAlpha = player.getAlpha();
-        pointInt A, Aprev;
         pointFloat P = {    .x = player.getX(),
                             .y = player.getY()};
-        pointInt C;
+        pointFloat C;
 
         for (int i = 0; i < SCREEN_WIDTH / 2; i++) {
 
@@ -406,7 +405,8 @@ int main(int argc, char** argv)
 
 
             //renderRay(renderer, colliType, dist, i);
-            renderRayTextured(renderer, colliType, dist, i, &C, pixelsWalls[map[C.y/BLOCK_SIZE][C.x/BLOCK_SIZE]-1]);
+            renderRayTextured(renderer, colliType, dist, i, &C, pixelsWalls[map[(int)C.y/BLOCK_SIZE][(int)C.x/BLOCK_SIZE]-1]);
+            //printf("[i=%d] subAlpha = %f\n", i - SCREEN_WIDTH / 2, subAlpha);
 
         }
 

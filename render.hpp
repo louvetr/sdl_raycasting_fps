@@ -9,6 +9,6 @@
 #include "collision.hpp"
 
 int renderRay(SDL_Renderer *renderer, enum collision_ray_type colliType, int dist, int X);
-int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType, int dist, int X, pointInt *C, Uint8 *pixelsWall);
+int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType, int dist, int X, pointFloat *C, Uint8 *pixelsWall);
 
 #endif

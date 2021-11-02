@@ -12,11 +12,10 @@ int collisionIsWall(int x, int y, char map[MAP_HEIGHT][MAP_WIDTH])
 }
 
 // TODO: use pointInt for P
-static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointInt *C, int *rayDist)
+static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointFloat *C, int *rayDist)
 {
     int ret = 1;
-    pointInt B, Bprev;
-    int Xa;
+    pointFloat B, Bprev;
 
     int degrees = tan2degree(rayAlpha);
     if(degrees == 90 || degrees == 270) {
@@ -28,17 +27,15 @@ static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_
     if(rayAlpha < PI / 2.f || rayAlpha > 3.f*PI / 2.f) {
         face_east = 1;
         B.x = (int)P.x/BLOCK_SIZE * BLOCK_SIZE + BLOCK_SIZE;
-        Xa = BLOCK_SIZE;
     }
     else{
-        B.x = (int)P.x/BLOCK_SIZE * BLOCK_SIZE -1;
-        Xa = -BLOCK_SIZE;
+        B.x = (int) P.x/BLOCK_SIZE * BLOCK_SIZE - 1;
     }
     B.y = P.y + (P.x - B.x) * tanf(rayAlpha);
 
-    int map_x = (int)(B.x/BLOCK_SIZE);
-    int map_y = (int)(B.y/BLOCK_SIZE);
-    int Ya = (int)(64.f * tanf(rayAlpha));
+    int map_x = (int)B.x/BLOCK_SIZE;
+    int map_y = (int)B.y/BLOCK_SIZE;
+    float Ya = 64.f * tanf(rayAlpha);
     int cpt = 0;
     /*printf("V collision check: faceEast = %d, Ya = %d\n", face_east, Ya);    
     printf("V collision check #%d: B(%d,%d), map(%d,%d)\n", cpt, B.x, B.y, map_x, map_y);    */
@@ -58,8 +55,8 @@ static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_
             B.y = Bprev.y + Ya;
         }
 
-        map_x = (int)(B.x/BLOCK_SIZE);
-        map_y = (int)(B.y/BLOCK_SIZE);
+        map_x = (int)B.x/BLOCK_SIZE;
+        map_y = (int)B.y/BLOCK_SIZE;
 
         cpt++;
         //printf("V collision check #%d: B(%d,%d), map(%d,%d)\n", cpt, B.x, B.y, map_x, map_y);    
@@ -67,7 +64,6 @@ static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_
             ret = 0;
             break;
         }
-
     }
 
     if (ret) {
@@ -80,11 +76,11 @@ static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_
 }
 
 
-static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointInt *C, int *rayDist)
+static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointFloat *C, int *rayDist)
 {
     int ret = 1;
 
-    pointInt A, Aprev;
+    pointFloat A, Aprev;
     int face_north = 0;
 
     int degrees = tan2degree(rayAlpha);
@@ -104,13 +100,13 @@ static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MA
         face_north = 1;
     }
 
-    A.x = (int)P.x + ((int)P.y - (float)A.y) / tanf(rayAlpha);
+    A.x = P.x + (P.y - A.y) / tanf(rayAlpha);
 
-    int map_x = (int)(A.x/BLOCK_SIZE);
-    int map_y = (int)(A.y/BLOCK_SIZE);
+    int map_x = (int)A.x/BLOCK_SIZE;
+    int map_y = (int)A.y/BLOCK_SIZE;
 
     // Check if 1st block hit by the ray is a wall
-    int Xa = (int)((float)BLOCK_SIZE / tanf(rayAlpha));
+    float Xa = (float)BLOCK_SIZE / tanf(rayAlpha);
 
     int cpt = 0;
 
@@ -123,10 +119,10 @@ static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MA
 
         if (face_north) {
             A.x = Aprev.x + Xa;
-            A.y = Aprev.y - BLOCK_SIZE;
+            A.y = (int)Aprev.y - BLOCK_SIZE;
         } else {
             A.x = Aprev.x - Xa;
-            A.y = Aprev.y + BLOCK_SIZE;
+            A.y = (int)Aprev.y + BLOCK_SIZE;
         }
 
         map_x = (int)(A.x/BLOCK_SIZE);
@@ -141,7 +137,7 @@ static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MA
     }
 
     if (ret) {
-        *C = A;
+        *C = A;  
         *rayDist = abs((P.y-A.y) / sinf(rayAlpha));
         //printf("H collision: A(%d,%d), map(%d,%d), dist = %d\n", A.x, A.y, map_x, map_y, *rayDist);
     }
@@ -149,11 +145,11 @@ static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MA
     return ret;
 }
 
-enum collision_ray_type collisioRayCheck (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointInt *C, int *dist)
+enum collision_ray_type collisioRayCheck (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointFloat *C, int *dist)
 {
     enum collision_ray_type ret = COLLISION_RAY_NONE;
 
-    pointInt H, V;
+    pointFloat H, V;
     int distH, distV;
     int colliH = collisioRayCheckHorizontal (P, rayAlpha, map, &H, &distH);
     int colliV = collisioRayCheckVertical (P, rayAlpha, map, &V, &distV);

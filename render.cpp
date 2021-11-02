@@ -29,10 +29,10 @@ int renderRay(SDL_Renderer *renderer, enum collision_ray_type colliType, int dis
 }
 
 
-int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType, int dist, int X, pointInt *C, Uint8 *pixelsWall)
+int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType, int dist, int X, pointFloat *C, Uint8 *pixelsWall)
 {
 
-    int tileFactor = 2;
+    int tileFactor = 1;
 
     if (colliType == COLLISION_RAY_NONE)
         return -1;
@@ -45,14 +45,17 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
     int Ya = (SCREEN_HEIGHT - heightProjected) / 2;
     int Yb = (SCREEN_HEIGHT + heightProjected) / 2;
 
-    //uint8_t colorOffset = - dist / 4;
     uint8_t colorOffset = 0;
-    int textureX = 0;
+    float textureX = 0;
 
-    if (colliType == COLLISION_RAY_HORIZONTAL)
-      textureX = C->x % (BLOCK_SIZE * 2);
-    else
-      textureX = C->y % (BLOCK_SIZE * 2);
+    if (colliType == COLLISION_RAY_HORIZONTAL) {
+      int toRemove = (int)C->x / BLOCK_SIZE;
+      textureX = floor(C->x) - toRemove;
+    }
+    else { 
+      int toRemove = (int)C->y / BLOCK_SIZE;
+      textureX = floor(C->y) - toRemove;
+    }
 
     int drawX, drawY;
 
@@ -64,10 +67,12 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
     int i = Ya < 0 ? -Ya : 0;
     int toDrawY = Ya + i;
 
+    //printf("textureX = %d; C(%f, %f)\n", (int)textureX, C->x, C->y);
     int texturePixelY = (int)((float) i / ratio);
+
     while(i< heightProjected && toDrawY < SCREEN_HEIGHT) {
       int texturePixelY = (int)((float) i / ratio);
-      int pixelIdx = 4 * (texturePixelY * textureW + textureX);
+      int pixelIdx = 4 * (texturePixelY * textureW + (int)textureX);
 
       pixelIdx = (pixelIdx * tileFactor) % (128 * 128 * 4); // store then insert here the texture size
 
@@ -76,8 +81,11 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
       int b = pixelsWall[pixelIdx + 0];
 
 		  SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
+      
       SDL_RenderDrawPoint(renderer, X + Xoffset, toDrawY);
       toDrawY = Ya + i;
       i++;
     }
+
+    return 0;
 }

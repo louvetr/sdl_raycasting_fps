@@ -2,7 +2,7 @@
 A CPP raycasting engine
 
 # TODO list
-    - ray collision occasional bug
+    - ray collision occasional bug when facing block angle south east
     - reduce minimap
     - full screen '3D' display
     - floor texture
