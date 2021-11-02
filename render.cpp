@@ -80,7 +80,10 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
       int g = pixelsWall[pixelIdx + 1];
       int b = pixelsWall[pixelIdx + 0];
 
-		  SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
+      if (colliType == COLLISION_RAY_HORIZONTAL)
+		    SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
+      else
+		    SDL_SetRenderDrawColor(renderer, r*3/4, g*3/4, b*3/4, 0xFF);
       
       SDL_RenderDrawPoint(renderer, X + Xoffset, toDrawY);
       toDrawY = Ya + i;
