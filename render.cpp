@@ -93,7 +93,7 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 
 int renderMinimap(SDL_Renderer *renderer, Player *player, char map[MAP_HEIGHT][MAP_WIDTH], Uint8 map_scale)
 {
-    Uint8 alpha = 0x05;
+    Uint8 alpha = 0xA0;
 
     SDL_Rect rect;
     rect.x = 0;
@@ -101,6 +101,8 @@ int renderMinimap(SDL_Renderer *renderer, Player *player, char map[MAP_HEIGHT][M
     rect.w = BLOCK_SIZE * MAP_WIDTH / map_scale;
     rect.h = BLOCK_SIZE * MAP_HEIGHT / map_scale;
 		
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
     SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, alpha);
     SDL_RenderFillRect(renderer, &rect);
 
@@ -145,15 +147,17 @@ int renderMinimap(SDL_Renderer *renderer, Player *player, char map[MAP_HEIGHT][M
     }
 
     // DRAW PLAYER ////////////////////////////////////////////////////////////////
-    circleRGBA (renderer, player->getX() / map_scale, player->getY() / map_scale, 10, 0xff, 0, 0, 0xff);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 
-		SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0x00, 0xff);
+    circleRGBA (renderer, player->getX() / map_scale, player->getY() / map_scale, BLOCK_SIZE / map_scale / 2, 0, 0, 0, 0xff);
+
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
 
     SDL_RenderDrawLine( renderer,
                         player->getX() / map_scale,
                         player->getY() / map_scale,
-                        (player->getX() + cosf(player->getAlpha())*10.f) / map_scale,
-                        (player->getY() - sinf(player->getAlpha())*10.f) / map_scale  );
+                        (player->getX() + cosf(player->getAlpha())*30.f) / map_scale,
+                        (player->getY() - sinf(player->getAlpha())*30.f) / map_scale  );
 
   return 0;
 }
