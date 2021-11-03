@@ -3,8 +3,6 @@ A CPP raycasting engine
 
 # TODO list
     - better minimap: transparancy, cone of sight
-    - Wall textures top slice appears on bottom
-    - Vertical artifact line separating wall blocks
     - Code cleaning and optimization
     - floor texture
     - wall of several block height

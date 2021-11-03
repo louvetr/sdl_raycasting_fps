@@ -49,16 +49,10 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
     uint8_t colorOffset = 0;
     float textureX = 0;
 
-    if (colliType == COLLISION_RAY_HORIZONTAL) {
-      int toRemove = (int)C->x / BLOCK_SIZE;
-      textureX = floor(C->x) - toRemove;
-    }
-    else { 
-      int toRemove = (int)C->y / BLOCK_SIZE;
-      textureX = floor(C->y) - toRemove;
-    }
-
-    textureX *= 2;
+    if (colliType == COLLISION_RAY_HORIZONTAL)
+      textureX = fmodf(C->x, (float)BLOCK_SIZE) * 2;
+    else
+      textureX = fmodf(C->y, (float)BLOCK_SIZE) * 2;
 
     int drawX, drawY;
 
