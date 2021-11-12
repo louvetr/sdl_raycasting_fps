@@ -245,6 +245,24 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    pixelsWalls[5] = getPixelsFromTextureFile ("./texture/default_grass.png");
+    if(!pixelsWalls[5]) {
+        printf("getPixelsFromTextureFile ERROR\n");
+        return -1;
+    }
+
+    pixelsWalls[6] = getPixelsFromTextureFile ("./texture/default_gravel.png");
+    if(!pixelsWalls[6]) {
+        printf("getPixelsFromTextureFile ERROR\n");
+        return -1;
+    }
+
+    pixelsWalls[7] = getPixelsFromTextureFile ("./texture/default_mossycobble.png");
+    if(!pixelsWalls[7]) {
+        printf("getPixelsFromTextureFile ERROR\n");
+        return -1;
+    }
+
     uint8_t op_length, op_duration;
     uint32_t op_cpt = 0;
     // cpu loop
@@ -255,6 +273,7 @@ int main(int argc, char** argv)
     uint32_t opcode_nb = 0;
 
     int minimap_scale = 4;
+
 
     // Main loop
     while(!ctrl_getQuit()) {
@@ -323,7 +342,8 @@ int main(int argc, char** argv)
             dist *= cosf(subAlpha);
 
             //renderRay(renderer, colliType, dist, i);
-            renderRayTextured(renderer, colliType, dist, i, &C, pixelsWalls[map[(int)C.y/BLOCK_SIZE][(int)C.x/BLOCK_SIZE]-1]);
+            renderRayTextured(renderer, colliType, dist, i, &C, pixelsWalls[map[(int)C.y/BLOCK_SIZE][(int)C.x/BLOCK_SIZE]-1],
+                                P, rayAlpha, subAlpha, pixelsWalls[5]);
 
             // TODO:  useless ? hidden by minimap
             //renderMinimapRay(renderer, &player, &C, subAlpha, colliType, minimap_scale);

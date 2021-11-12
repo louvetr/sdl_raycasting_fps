@@ -30,7 +30,7 @@ int renderRay(SDL_Renderer *renderer, enum collision_ray_type colliType, int dis
 }
 
 
-int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType, int dist, int X, pointFloat *C, Uint8 *pixelsWall)
+int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType, int dist, int X, pointFloat *C, Uint8 *pixelsWall, pointFloat playerPoint, float rayAlpha, float subAlpha, Uint8 *pixelsFloor)
 {
 
     int tileFactor = 1;
@@ -86,6 +86,60 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
       toDrawY = Ya + i;
       i++;
     }
+
+
+    // Draw Floor
+    /*if(X < SCREEN_WIDTH / 2 - 5 || X > SCREEN_WIDTH / 2 + 5)
+      return 0;*/
+
+    
+		//var targetIndex=lastBottomOfWall*(this.offscreenCanvasPixels.width*bytesPerPixel)+(bytesPerPixel*castColumn);
+    for(int row = toDrawY /*+ 1*/; row < SCREEN_HEIGHT; row++) {
+
+			float ratioFloor = 32.f / (float)(row - SCREEN_HEIGHT / 2);
+			float diagonalDistance = distPlayer * ratioFloor / cosf(subAlpha) / 2; // !!!!! / 2 is weird
+
+      // floor point coordinates
+			float xEnd = (playerPoint.x + floorf(diagonalDistance * cosf(rayAlpha)));
+			float yEnd = (playerPoint.y - floorf(diagonalDistance * sinf(rayAlpha)));
+		
+			// get matching map block
+			int cellX = floorf(xEnd / BLOCK_SIZE);
+			int cellY = floorf(yEnd / BLOCK_SIZE);
+
+        static int cpt = 1;
+        if(cpt % 10 == 0 && X == SCREEN_WIDTH / 2 && row == toDrawY + 1) {
+          printf("[FLOOR] ratioFloor=%f, distPlayer=%d, diagonalDistance=%f\n", ratioFloor, distPlayer, diagonalDistance);
+          printf("[FLOOR] playerPoint=(%f, %f), endXY=(%f, %f), CellXY=(%d, %d)\n",
+                  playerPoint.x, playerPoint.y, xEnd, yEnd, cellX, cellY);
+        }
+			//Make sure the tile is within our map
+			if ((cellX<MAP_WIDTH) && (cellY<MAP_HEIGHT) && cellX>=0 && cellY>=0)
+			{            
+				// Find pixel X,Y in texture
+        int tileX = (int)floorf(fmodf(xEnd, (float)BLOCK_SIZE * 2));
+        int tileY = (int)floorf(fmodf(yEnd, (float)BLOCK_SIZE * 2));
+        int pixelIdx = 4 * (tileX * textureW + (int)tileY);
+        int tileFactorFloor = 1;
+
+        pixelIdx = (pixelIdx * tileFactorFloor)  % (128 * 128 * 4); // TODO: store then insert here the texture size
+
+        int r = pixelsFloor[pixelIdx + 2];
+        int g = pixelsFloor[pixelIdx + 1];
+        int b = pixelsFloor[pixelIdx + 0];
+
+        if(cpt % 10 == 0 && X == SCREEN_WIDTH / 2 && toDrawY + 1 && row == toDrawY + 1)
+          printf("floor pixel: (%d, %d) => %d\n", tileX, tileY, pixelIdx);
+
+		    SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
+        SDL_RenderDrawPoint(renderer, X + Xoffset, row );
+
+
+			}                                                              
+          cpt++;
+
+    }
+
 
     return 0;
 }
