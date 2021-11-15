@@ -4,7 +4,7 @@
 #include "main.hpp"
 #include "player.hpp"
 
-#define STEP_SIZE 5.f
+#define STEP_SIZE 10.f
 
 
 static int quit = 0;

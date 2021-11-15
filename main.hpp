@@ -9,15 +9,17 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
+
 #define PId6    0.523598f
 #define PId3    1.047197f
 #define PI      3.141592f
 #define PI2     6.283185f
 
-#define MAP_WIDTH   16
-#define MAP_HEIGHT  16
-
 #define BLOCK_SIZE  64
+#define TEXTURE_SIZE  128
 
 /*const int SCREEN_WIDTH_VRAM = 1024;
 const int SCREEN_HEIGHT_VRAM = 32;*/
@@ -43,5 +45,10 @@ typedef struct pointFloat {
 
 static inline int tan2degree(float radians)
 {   return (int)(radians * (57.2957795131)); }
+
+
+SDL_Window* getWindow();
+SDL_Renderer* getRenderer();
+
 
 #endif

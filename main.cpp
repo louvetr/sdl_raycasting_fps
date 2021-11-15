@@ -1,18 +1,11 @@
-
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
-
-
 #include "collision.hpp"
 #include "control.hpp"
+#include "gfx.hpp"
 #include "main.hpp"
 #include "map.hpp"
 #include "player.hpp"
 #include "render.hpp"
 
-#include "map.hpp"
 
 SDL_Window *window;
 SDL_Texture *texture;
@@ -22,26 +15,15 @@ SDL_Renderer *renderer;
 int scale = 1;
 
 
+SDL_Window* getWindow()
+{
+    return window;
+}
 
-
-int rawMap[MAP_HEIGHT][MAP_WIDTH] = {
-    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-    {1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
-    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-    {1,0,0,3,3,0,0,0,2,2,0,0,0,0,0,1},
-    {1,0,0,3,3,0,0,0,2,2,2,2,2,0,0,1},
-    {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1},
-    {1,1,0,0,0,0,0,0,2,0,0,0,0,0,0,1},
-    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-    {1,0,0,4,4,4,0,0,0,0,0,5,5,0,0,1},
-    {1,0,0,0,0,4,0,0,0,0,5,5,5,0,0,1},
-    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-    {1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1},
-    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-    };
+SDL_Renderer* getRenderer()
+{
+    return renderer;
+}
 
 
 int SDL_init()
@@ -60,7 +42,7 @@ int SDL_init()
 	}
 
 	// create window
-	window = SDL_CreateWindow("BalaBoy", SDL_WINDOWPOS_UNDEFINED,
+	window = SDL_CreateWindow("BalaFps", SDL_WINDOWPOS_UNDEFINED,
 				  SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH * scale,
 				  SCREEN_HEIGHT * scale, SDL_WINDOW_SHOWN);
 	if (!window) {
@@ -95,85 +77,6 @@ int SDL_init()
 	return 0;
 }
 
-SDL_Texture *textureWall = NULL;
-Uint8 *pixelsWalls[10];
-
-/*
-Copies the pixels from a SDL2 surface.
-You should free() the returned pixels when you're done with it.
-*/
-Uint8* copySurfacePixels(
-  SDL_Surface* surface,  // surface to take pixels from
-  Uint32 pixelFormat,    // usually SDL_GetWindowPixelFormat(window)
-  SDL_Renderer* renderer,// main SDL2 renderer
-  int* width,            // stores result width
-  int* height,           // stores result height
-  int* pitch)            // stores result pitch
-{
-    Uint8* pixels = 0;
-    SDL_Surface* tmpSurface = 0;
-    SDL_Texture* texture = 0;
-    int sizeInBytes = 0;
-    void* tmpPixels = 0;
-    int tmpPitch = 0;
-
-    tmpSurface = SDL_ConvertSurfaceFormat(surface, pixelFormat, 0);
-    if (tmpSurface) {
-        texture = SDL_CreateTexture( renderer, pixelFormat,
-                                    SDL_TEXTUREACCESS_STREAMING,
-                                    tmpSurface->w, tmpSurface->h );
-        if(!texture)
-            printf("[%s:%d] SDL_CreateTexture FAILED\n", __func__, __LINE__);
-    }
-    else
-        printf("[%s:%d] SDL_ConvertSurfaceFormat FAILED\n", __func__, __LINE__);
-
-
-    if (texture) {
-        if (width)
-            *width = tmpSurface->w;
-        
-        if (height)
-            *height = tmpSurface->h;
-    
-        if (pitch)
-        *pitch = tmpSurface->pitch;
-        
-        sizeInBytes = tmpSurface->pitch * tmpSurface->h;
-        printf("[%s:%d] sizeInBytes = %d\n", __func__, __LINE__, sizeInBytes);
-        pixels = (Uint8*)malloc( sizeInBytes );
-        SDL_LockTexture( texture, 0, &tmpPixels, &tmpPitch );
-        memcpy( pixels, tmpSurface->pixels, sizeInBytes);
-        SDL_UnlockTexture( texture );
-    }
-
-    // Cleanup
-    if (texture) 
-        SDL_DestroyTexture(texture);
-
-    if (tmpSurface)
-        SDL_FreeSurface(tmpSurface);
-  
-    return pixels;
-}
-
-Uint8* getPixelsFromTextureFile (const char *path)
-{
-	SDL_Surface *surface = IMG_Load(path);
-	if (!surface) {
-		SDL_Log("[%s] Unable to load image %s! SDL_image Error: %s\n",
-			__func__,
-			path,
-			IMG_GetError());
-		return NULL;
-	}
-    Uint32 pf = SDL_GetWindowPixelFormat(window);
-    printf("pixelFormat = %d\n", pf);
-    int w=0, h=0, p=0;
-    Uint8* pixels = copySurfacePixels(surface, pf, renderer, &w, &h, &p);
-
-    return pixels;
-}
 
 void leave()
 {
@@ -218,53 +121,7 @@ int main(int argc, char** argv)
     time_init();*/
 
 
-    // Load texture
-    //load_texture_from_file(textureWall, "./texture/default_brick.png");
-    pixelsWalls[0] = getPixelsFromTextureFile ("./texture/default_silver_sandstone_block.png");
-    if(!pixelsWalls[0]) {
-        printf("getPixelsFromTextureFile ERROR\n");
-        return -1;
-    }
-    pixelsWalls[1] = getPixelsFromTextureFile ("./texture/default_brick.png");
-    if(!pixelsWalls[1]) {
-        printf("getPixelsFromTextureFile ERROR\n");
-        return -1;
-    }
-    pixelsWalls[2] = getPixelsFromTextureFile ("./texture/default_stone_brick.png");
-    if(!pixelsWalls[2]) {
-        printf("getPixelsFromTextureFile ERROR\n");
-        return -1;
-    }
-
-    pixelsWalls[3] = getPixelsFromTextureFile ("./texture/default_wood.png");
-    if(!pixelsWalls[3]) {
-        printf("getPixelsFromTextureFile ERROR\n");
-        return -1;
-    }
-
-    pixelsWalls[4] = getPixelsFromTextureFile ("./texture/default_obsidian_block.png");
-    if(!pixelsWalls[4]) {
-        printf("getPixelsFromTextureFile ERROR\n");
-        return -1;
-    }
-
-    pixelsWalls[5] = getPixelsFromTextureFile ("./texture/default_grass.png");
-    if(!pixelsWalls[5]) {
-        printf("getPixelsFromTextureFile ERROR\n");
-        return -1;
-    }
-
-    pixelsWalls[6] = getPixelsFromTextureFile ("./texture/default_gravel.png");
-    if(!pixelsWalls[6]) {
-        printf("getPixelsFromTextureFile ERROR\n");
-        return -1;
-    }
-
-    pixelsWalls[7] = getPixelsFromTextureFile ("./texture/default_mossycobble.png");
-    if(!pixelsWalls[7]) {
-        printf("getPixelsFromTextureFile ERROR\n");
-        return -1;
-    }
+    gfxLoadTexture();
 
     uint8_t op_length, op_duration;
     uint32_t op_cpt = 0;
@@ -275,48 +132,14 @@ int main(int argc, char** argv)
     uint32_t time_cpu = 4;
     uint32_t opcode_nb = 0;
 
-    int minimap_scale = 4;
+    int minimap_scale = 8;
 
     mapObj map = mapObj(MAP_WIDTH, MAP_HEIGHT, 1);
     mapFloor floor = mapFloor(MAP_WIDTH, MAP_HEIGHT);
     *map.floors = floor;
+    map.build(); 
 
-    for(int i = 0; i < MAP_HEIGHT; i++) {
-        for(int j = 0; j < MAP_WIDTH; j++) {
-            int idx = i*MAP_HEIGHT + j;
-            if(idx == 126)
-                printf("idx == 126\n");
 
-            switch (rawMap[i][j]) {
-                case 0:
-                    map.floors->blocks[idx]->setTextureFloor(pixelsWalls[5], 128, 128, 1);
-                    break;
-                default:
-                    map.floors->blocks[idx]->setTextureWall(pixelsWalls[1], 128, 128, 1);
-            }
-            SDL_Log("[DEBUG][%s:%d] map.floors->blocks[%d].textureWall = 0x%x, 0x%x\n",
-                        __func__, __LINE__, idx, &map.floors->blocks[idx]->textureWall, map.floors->blocks[idx]->textureWall);
-        }
-    }
-
-    for(int i = 0; i < MAP_HEIGHT; i++) {
-        for(int j = 0; j < MAP_WIDTH; j++) {
-            int idx = i*MAP_HEIGHT + j;
-
-            switch (map.floors->blocks[idx]->type) {
-                case MBTYPE_FLOOR :
-                    printf("%d, ", MBTYPE_FLOOR);
-                    break;
-                case MBTYPE_WALL :
-                    printf("%d, ", MBTYPE_WALL);
-                    break;
-                default:
-                    printf("?, ");
-                    
-            }
-        }
-        printf("\n");
-    }
 
     // Main loop
     while(!ctrl_getQuit()) {
@@ -340,6 +163,7 @@ int main(int argc, char** argv)
         SDL_RenderFillRect(renderer, &rectBg);
 
         // DRAW GRASS GRADIANT ////////////////////////////////////////////////////////////
+        // TODO: remove and fix bottom of walls        
         int nbSubSteps = 50;
         int gradiantStepH = SCREEN_HEIGHT / 2 / nbSubSteps;
         int gradiantOffset = 2;
