@@ -30,10 +30,12 @@ int renderRay(SDL_Renderer *renderer, enum collision_ray_type colliType, int dis
 }
 
 
-int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType, int dist, int X, pointFloat *C, Uint8 *pixelsWall, pointFloat playerPoint, float rayAlpha, float subAlpha, Uint8 *pixelsFloor)
+int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType, int dist, int X, pointFloat *C, mapObj *map, pointFloat playerPoint, float rayAlpha, float subAlpha)
 {
 
     int tileFactor = 1;
+
+    int block_idx = (int)C->y/BLOCK_SIZE * map->mapHeight + (int)C->x/BLOCK_SIZE;
 
     if (colliType == COLLISION_RAY_NONE)
         return -1;
@@ -73,9 +75,14 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 
       pixelIdx = (pixelIdx * tileFactor) % (128 * 128 * 4); // TODO: store then insert here the texture size
 
-      int r = pixelsWall[pixelIdx + 2];
-      int g = pixelsWall[pixelIdx + 1];
-      int b = pixelsWall[pixelIdx + 0];
+      if(map->floors[0].blocks[block_idx]->textureWall == NULL) {   // TODO: remove ?
+        i++;
+        continue;
+      }
+
+      int r = map->floors[0].blocks[block_idx]->textureWall[pixelIdx + 2];
+      int g = map->floors[0].blocks[block_idx]->textureWall[pixelIdx + 1];
+      int b = map->floors[0].blocks[block_idx]->textureWall[pixelIdx + 0];
 
       if (colliType == COLLISION_RAY_HORIZONTAL)
 		    SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
@@ -89,11 +96,6 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 
 
     // Draw Floor
-    /*if(X < SCREEN_WIDTH / 2 - 5 || X > SCREEN_WIDTH / 2 + 5)
-      return 0;*/
-
-    
-		//var targetIndex=lastBottomOfWall*(this.offscreenCanvasPixels.width*bytesPerPixel)+(bytesPerPixel*castColumn);
     for(int row = toDrawY /*+ 1*/; row < SCREEN_HEIGHT; row++) {
 
 			float ratioFloor = 32.f / (float)(row - SCREEN_HEIGHT / 2);
@@ -124,20 +126,24 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 
         pixelIdx = (pixelIdx * tileFactorFloor)  % (128 * 128 * 4); // TODO: store then insert here the texture size
 
-        int r = pixelsFloor[pixelIdx + 2];
-        int g = pixelsFloor[pixelIdx + 1];
-        int b = pixelsFloor[pixelIdx + 0];
+        block_idx = cellY * map->mapHeight + cellX;
+
+        if(map->floors[0].blocks[block_idx]->textureFloor == NULL) // TODO: remove ?
+          continue;
+      
+
+        int r = map->floors[0].blocks[block_idx]->textureFloor[pixelIdx + 2];
+        int g = map->floors[0].blocks[block_idx]->textureFloor[pixelIdx + 1];
+        int b = map->floors[0].blocks[block_idx]->textureFloor[pixelIdx + 0];
+
 
         if(cpt % 10 == 0 && X == SCREEN_WIDTH / 2 && toDrawY + 1 && row == toDrawY + 1)
           printf("floor pixel: (%d, %d) => %d\n", tileX, tileY, pixelIdx);
 
 		    SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
         SDL_RenderDrawPoint(renderer, X + Xoffset, row );
-
-
 			}                                                              
-          cpt++;
-
+      cpt++;
     }
 
 
@@ -145,7 +151,7 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 }
 
 
-int renderMinimap(SDL_Renderer *renderer, Player *player, char map[MAP_HEIGHT][MAP_WIDTH], Uint8 map_scale)
+int renderMinimap(SDL_Renderer *renderer, Player *player, mapObj *map, Uint8 map_scale)
 {
     Uint8 alpha = 0xA0;
 
@@ -168,7 +174,7 @@ int renderMinimap(SDL_Renderer *renderer, Player *player, char map[MAP_HEIGHT][M
 
     for(int i = 0; i < MAP_HEIGHT; i++) {
         for(int j = 0; j < MAP_WIDTH; j++) {
-            if(map[i][j] > 0) {
+            if(map->floors[0].blocks[i * map->mapHeight + j]->type > MBTYPE_FLOOR) {
                 rect.x = BLOCK_SIZE * j / map_scale;
                 rect.y = BLOCK_SIZE * i / map_scale;
                 SDL_RenderFillRect(renderer, &rect);

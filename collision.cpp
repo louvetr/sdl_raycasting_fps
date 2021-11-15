@@ -2,17 +2,17 @@
 #include "collision.hpp"
 
 
-int collisionIsWall(int x, int y, char map[MAP_HEIGHT][MAP_WIDTH])
+int collisionIsWall(int x, int y, mapObj *map)
 {
-    if (x >= MAP_WIDTH || y >= MAP_HEIGHT || x < 0 || y < 0 ||
-        map[y][x] == 0)
+    if (x >= map->mapWidth || y >= map->mapHeight || x < 0 || y < 0 ||
+		map->floors[0].blocks[y * map->mapHeight + x]->type != MBTYPE_WALL) 
         return 0;
     else
         return 1;
 }
 
 // TODO: use pointInt for P
-static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointFloat *C, int *rayDist)
+static int collisioRayCheckVertical (pointFloat P, float rayAlpha, mapObj *map, pointFloat *C, int *rayDist)
 {
     int ret = 1;
     pointFloat B, Bprev;
@@ -43,7 +43,7 @@ static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_
     // While B point is not on a wall, compute and test next block
     while (map_x >= MAP_WIDTH || map_y >= MAP_HEIGHT ||
             map_x < 0 || map_y < 0 ||
-            map[map_y][map_x] == 0) {
+            map->floors[0].blocks[map_y * map->mapHeight + map_x]->type == MBTYPE_FLOOR) {
         
         Bprev = B;
 
@@ -76,7 +76,7 @@ static int collisioRayCheckVertical (pointFloat P, float rayAlpha, char map[MAP_
 }
 
 
-static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointFloat *C, int *rayDist)
+static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, mapObj *map, pointFloat *C, int *rayDist)
 {
     int ret = 1;
 
@@ -113,7 +113,9 @@ static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MA
     // While A point is not on a wall, compute and test next block
     while (map_x >= MAP_WIDTH || map_y >= MAP_HEIGHT ||
             map_x < 0 || map_y < 0 ||
-            map[map_y][map_x] == 0) {
+            //map->floors[0].blocks[map_y * map->mapHeight + map_x].type != MBTYPE_WALL) {
+            map->floors[0].blocks[map_y * map->mapHeight + map_x]->type == MBTYPE_FLOOR) {
+            //map[map_y][map_x] == 0) {
         
         Aprev = A;
 
@@ -145,7 +147,7 @@ static int collisioRayCheckHorizontal (pointFloat P, float rayAlpha, char map[MA
     return ret;
 }
 
-enum collision_ray_type collisioRayCheck (pointFloat P, float rayAlpha, char map[MAP_HEIGHT][MAP_WIDTH], pointFloat *C, int *dist)
+enum collision_ray_type collisioRayCheck (pointFloat P, float rayAlpha, mapObj *map, pointFloat *C, int *dist)
 {
     enum collision_ray_type ret = COLLISION_RAY_NONE;
 

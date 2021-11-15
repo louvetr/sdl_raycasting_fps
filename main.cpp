@@ -8,8 +8,11 @@
 #include "collision.hpp"
 #include "control.hpp"
 #include "main.hpp"
+#include "map.hpp"
 #include "player.hpp"
 #include "render.hpp"
+
+#include "map.hpp"
 
 SDL_Window *window;
 SDL_Texture *texture;
@@ -21,7 +24,7 @@ int scale = 1;
 
 
 
-char map[MAP_HEIGHT][MAP_WIDTH] = {
+int rawMap[MAP_HEIGHT][MAP_WIDTH] = {
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     {1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -274,6 +277,46 @@ int main(int argc, char** argv)
 
     int minimap_scale = 4;
 
+    mapObj map = mapObj(MAP_WIDTH, MAP_HEIGHT, 1);
+    mapFloor floor = mapFloor(MAP_WIDTH, MAP_HEIGHT);
+    *map.floors = floor;
+
+    for(int i = 0; i < MAP_HEIGHT; i++) {
+        for(int j = 0; j < MAP_WIDTH; j++) {
+            int idx = i*MAP_HEIGHT + j;
+            if(idx == 126)
+                printf("idx == 126\n");
+
+            switch (rawMap[i][j]) {
+                case 0:
+                    map.floors->blocks[idx]->setTextureFloor(pixelsWalls[5], 128, 128, 1);
+                    break;
+                default:
+                    map.floors->blocks[idx]->setTextureWall(pixelsWalls[1], 128, 128, 1);
+            }
+            SDL_Log("[DEBUG][%s:%d] map.floors->blocks[%d].textureWall = 0x%x, 0x%x\n",
+                        __func__, __LINE__, idx, &map.floors->blocks[idx]->textureWall, map.floors->blocks[idx]->textureWall);
+        }
+    }
+
+    for(int i = 0; i < MAP_HEIGHT; i++) {
+        for(int j = 0; j < MAP_WIDTH; j++) {
+            int idx = i*MAP_HEIGHT + j;
+
+            switch (map.floors->blocks[idx]->type) {
+                case MBTYPE_FLOOR :
+                    printf("%d, ", MBTYPE_FLOOR);
+                    break;
+                case MBTYPE_WALL :
+                    printf("%d, ", MBTYPE_WALL);
+                    break;
+                default:
+                    printf("?, ");
+                    
+            }
+        }
+        printf("\n");
+    }
 
     // Main loop
     while(!ctrl_getQuit()) {
@@ -281,7 +324,7 @@ int main(int argc, char** argv)
         Player playerPrev = player;
 
         // controls management
-        ctrl_main(&player, map);
+        ctrl_main(&player, &map);
 
 		// clear screen
 		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -336,14 +379,17 @@ int main(int argc, char** argv)
                 rayAlpha -= PI2;
 
             int dist = 0;
-            enum collision_ray_type colliType = collisioRayCheck (P, rayAlpha, map, &C, &dist);
+            enum collision_ray_type colliType = collisioRayCheck (P, rayAlpha, &map, &C, &dist);
             
             // remove fish eye effect
             dist *= cosf(subAlpha);
 
+            //map[(int)C.y/BLOCK_SIZE][(int)C.x/BLOCK_SIZE]-1
+            // C.y/BLOCK_SIZE * map.mapHeight + C.x/BLOCK_SIZE
+
             //renderRay(renderer, colliType, dist, i);
-            renderRayTextured(renderer, colliType, dist, i, &C, pixelsWalls[map[(int)C.y/BLOCK_SIZE][(int)C.x/BLOCK_SIZE]-1],
-                                P, rayAlpha, subAlpha, pixelsWalls[5]);
+            renderRayTextured(renderer, colliType, dist, i, &C, &map,
+                                P, rayAlpha, subAlpha);
 
             // TODO:  useless ? hidden by minimap
             //renderMinimapRay(renderer, &player, &C, subAlpha, colliType, minimap_scale);
@@ -351,7 +397,7 @@ int main(int argc, char** argv)
 
         }
 
-        renderMinimap(renderer, &player, map, minimap_scale);
+        renderMinimap(renderer, &player, &map, minimap_scale);
 
 		//update screen
 		SDL_RenderPresent(renderer);

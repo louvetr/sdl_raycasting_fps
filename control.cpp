@@ -1,3 +1,4 @@
+#include <stdio.h>
 
 #include "control.hpp"
 #include "main.hpp"
@@ -10,7 +11,7 @@ static int quit = 0;
 
 int ctrl_getQuit() {return quit;}
 
-int ctrl_main(Player *player, char map[MAP_HEIGHT][MAP_WIDTH])
+int ctrl_main(Player *player, mapObj *map)
 {
     SDL_Event e;
 	int newX, newY;
@@ -33,7 +34,7 @@ int ctrl_main(Player *player, char map[MAP_HEIGHT][MAP_WIDTH])
 				oldBlockY = player->getY() / BLOCK_SIZE;
 				newX = player->getX() + cosf(player->getAlpha()) * STEP_SIZE;
 				newY = player->getY() - sinf(player->getAlpha()) * STEP_SIZE;
-				if(map[newY/BLOCK_SIZE][newX/BLOCK_SIZE] == 0) {
+				if(map->floors[0].blocks[newY/BLOCK_SIZE * map->mapHeight + newX/BLOCK_SIZE]->type != MBTYPE_WALL) {
 	    	    	player->setX(newX);
 	    	    	player->setY(newY);
 				} 
@@ -45,7 +46,7 @@ int ctrl_main(Player *player, char map[MAP_HEIGHT][MAP_WIDTH])
 	    		//player->setY(player->getY() + 1);
 	    	    newX = player->getX() - cosf(player->getAlpha()) * STEP_SIZE;
 	    	    newY = player->getY() + sinf(player->getAlpha()) * STEP_SIZE;
-				if(map[newY/BLOCK_SIZE][newX/BLOCK_SIZE] == 0) {
+				if(map->floors[0].blocks[newY/BLOCK_SIZE * map->mapHeight + newX/BLOCK_SIZE]->type != MBTYPE_WALL) {
 	    	    	player->setX(newX);
 	    	    	player->setY(newY);
 				}
