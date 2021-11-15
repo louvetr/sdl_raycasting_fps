@@ -94,7 +94,6 @@ int gfxLoadTexture()
 {
     // Load texture
     texturesTab[silver_sandstone_block] = getPixelsFromTextureFile ("./texture/default_silver_sandstone_block.png");
-    SDL_Log("[%s:%d] just set texture #%d = 0x%p", __func__, __LINE__,  silver_sandstone_block, texturesTab[silver_sandstone_block]);
     texturesTab[brick] = getPixelsFromTextureFile ("./texture/default_brick.png");
     texturesTab[stone_brick] = getPixelsFromTextureFile ("./texture/default_stone_brick.png");
     texturesTab[wood] = getPixelsFromTextureFile ("./texture/default_wood.png");
@@ -112,7 +111,5 @@ int gfxLoadTexture()
 
 Uint8* gfxGetTexture(enum textureId id)
 {
-    if(id == 0)
-        SDL_Log("[%s:%d] return texture #%d = 0x%p", __func__, __LINE__,  id, texturesTab[id]);
     return texturesTab[id];
 }

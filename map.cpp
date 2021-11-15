@@ -40,6 +40,11 @@ void mapBlock::setTextureWall(Uint8 *tWall, int tWallWidth, int tWallHeight, int
   textureWallWidth = tWallWidth;
   textureWallHeight = tWallHeight;
   textureWallTileFactor = tWallTileFactor;
+
+  textureFloor = tWall;
+  textureFloorWidth = tWallWidth;
+  textureFloorHeight = tWallHeight;
+  textureFloorTileFactor = tWallTileFactor;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -140,7 +145,6 @@ void mapObj::build()
 
                 // Walls
                 case 0x10:
-                    SDL_Log("[%s:%d] setting wall texture #%d = 0x%p", __func__, __LINE__, silver_sandstone_block, gfxGetTexture(silver_sandstone_block));
                     floors->blocks[idx]->setTextureWall(gfxGetTexture(silver_sandstone_block), TEXTURE_SIZE, TEXTURE_SIZE, 1);
                     break;
                 case 0x20:

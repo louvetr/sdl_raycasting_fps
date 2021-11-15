@@ -46,7 +46,6 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
     int heightProjected = BLOCK_SIZE * distPlayer / dist / 2;
 
     int Ya = (SCREEN_HEIGHT - heightProjected) / 2;
-    int Yb = (SCREEN_HEIGHT + heightProjected) / 2;
 
     uint8_t colorOffset = 0;
     float textureX = 0;
@@ -69,7 +68,7 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
     //printf("textureX = %d; C(%f, %f)\n", (int)textureX, C->x, C->y);
     int texturePixelY = (int)((float) i / ratio);
 
-    while(i< heightProjected && toDrawY < SCREEN_HEIGHT) {
+    while(i< heightProjected + 2 && toDrawY < SCREEN_HEIGHT) {
       int texturePixelY = (int)((float) i / ratio);
       int pixelIdx = 4 * (texturePixelY * textureW + (int)textureX);
 
@@ -96,7 +95,9 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 
 
     // Draw Floor
-    for(int row = toDrawY /*+ 1*/; row < SCREEN_HEIGHT; row++) {
+    for(int row = toDrawY; row < (SCREEN_HEIGHT); row++) {
+
+      static int cpt = 1;
 
 			float ratioFloor = 32.f / (float)(row - SCREEN_HEIGHT / 2);
 			float diagonalDistance = distPlayer * ratioFloor / cosf(subAlpha) / 2; // !!!!! / 2 is weird
@@ -109,12 +110,13 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 			int cellX = floorf(xEnd / BLOCK_SIZE);
 			int cellY = floorf(yEnd / BLOCK_SIZE);
 
-        static int cpt = 1;
-        if(cpt % 10 == 0 && X == SCREEN_WIDTH / 2 && row == toDrawY + 1) {
+        /*if(cpt % 10 == 0 && X == SCREEN_WIDTH / 2 && row == toDrawY + 1) {
           printf("[FLOOR] ratioFloor=%f, distPlayer=%d, diagonalDistance=%f\n", ratioFloor, distPlayer, diagonalDistance);
           printf("[FLOOR] playerPoint=(%f, %f), endXY=(%f, %f), CellXY=(%d, %d)\n",
                   playerPoint.x, playerPoint.y, xEnd, yEnd, cellX, cellY);
-        }
+        }*/
+        block_idx = cellY * map->mapHeight + cellX;
+
 			//Make sure the tile is within our map
 			if ((cellX<MAP_WIDTH) && (cellY<MAP_HEIGHT) && cellX>=0 && cellY>=0)
 			{            
@@ -126,22 +128,19 @@ int renderRayTextured(SDL_Renderer *renderer, enum collision_ray_type colliType,
 
         pixelIdx = (pixelIdx * tileFactorFloor)  % (128 * 128 * 4); // TODO: store then insert here the texture size
 
-        block_idx = cellY * map->mapHeight + cellX;
+
+        //if(cpt % 10 == 0 && X == SCREEN_WIDTH / 2 && toDrawY + 1 && row == toDrawY + 1)
+        //  printf("floor pixel: (%d, %d) => %d\n", tileX, tileY, pixelIdx);
 
         if(map->floors[0].blocks[block_idx]->textureFloor == NULL) // TODO: remove ?
           continue;
-      
 
         int r = map->floors[0].blocks[block_idx]->textureFloor[pixelIdx + 2];
         int g = map->floors[0].blocks[block_idx]->textureFloor[pixelIdx + 1];
         int b = map->floors[0].blocks[block_idx]->textureFloor[pixelIdx + 0];
 
-
-        if(cpt % 10 == 0 && X == SCREEN_WIDTH / 2 && toDrawY + 1 && row == toDrawY + 1)
-          printf("floor pixel: (%d, %d) => %d\n", tileX, tileY, pixelIdx);
-
 		    SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
-        SDL_RenderDrawPoint(renderer, X + Xoffset, row );
+        SDL_RenderDrawPoint(renderer, X + Xoffset, row);
 			}                                                              
       cpt++;
     }

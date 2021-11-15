@@ -162,28 +162,6 @@ int main(int argc, char** argv)
         rectBg.h = SCREEN_HEIGHT / 2;
         SDL_RenderFillRect(renderer, &rectBg);
 
-        // DRAW GRASS GRADIANT ////////////////////////////////////////////////////////////
-        // TODO: remove and fix bottom of walls        
-        int nbSubSteps = 50;
-        int gradiantStepH = SCREEN_HEIGHT / 2 / nbSubSteps;
-        int gradiantOffset = 2;
-
-        Uint8 red = 0x66 - nbSubSteps * gradiantOffset ;
-        Uint8 green = 0x8D - nbSubSteps * gradiantOffset ;
-        Uint8 blue = 0x56 - nbSubSteps * gradiantOffset ;
-
-        rectBg.h = gradiantStepH;
-        rectBg.y = SCREEN_HEIGHT / 2;
-
-        for (int i = 0; i < nbSubSteps; i++) {
-            SDL_SetRenderDrawColor(renderer, red, green, blue, 0xFF);
-            SDL_RenderFillRect(renderer, &rectBg);
-            rectBg.y += gradiantStepH;
-            red += gradiantOffset;
-            green += gradiantOffset;
-            blue += gradiantOffset;
-        }
-
         // Ray collision ////////////////////////////////////////////////////////////////
 
 		SDL_SetRenderDrawColor(renderer, 0x00, 0xff, 0xff, 0xff);
