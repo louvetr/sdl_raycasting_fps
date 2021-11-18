@@ -132,7 +132,7 @@ int main(int argc, char** argv)
     uint32_t time_cpu = 4;
     uint32_t opcode_nb = 0;
 
-    int minimap_scale = 8;
+    int minimap_scale = 4;
 
     mapObj map = mapObj(MAP_WIDTH, MAP_HEIGHT, 1);
     mapFloor floor = mapFloor(MAP_WIDTH, MAP_HEIGHT);
@@ -194,7 +194,7 @@ int main(int argc, char** argv)
                                 P, rayAlpha, subAlpha);
 
             // TODO:  useless ? hidden by minimap
-            //renderMinimapRay(renderer, &player, &C, subAlpha, colliType, minimap_scale);
+            renderMinimapRay(renderer, &player, &C, subAlpha, colliType, minimap_scale);
             //printf("[i=%d] subAlpha = %f\n", i - SCREEN_WIDTH / 2, subAlpha);
 
         }

@@ -169,6 +169,14 @@ void mapObj::build()
 					gfxGetTexture(steel_block), TEXTURE_SIZE, TEXTURE_SIZE, 1);
 				break;
 
+			case 0x21:	// diagonal /
+				floors->blocks[idx]->setTextureWall(
+					gfxGetTexture(wood), TEXTURE_SIZE, TEXTURE_SIZE, 1);
+				floors->blocks[idx]->setTextureFloor(
+					gfxGetTexture(grass), TEXTURE_SIZE, TEXTURE_SIZE, 2);
+				floors->blocks[idx]->setType(MBTYPE_WALL_DIAG_BL2TR);
+				break;
+
 			default:
 				SDL_Log("ERROR when setting map block type");
 			}
