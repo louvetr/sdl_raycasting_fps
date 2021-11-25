@@ -169,7 +169,15 @@ void mapObj::build()
 					gfxGetTexture(steel_block), TEXTURE_SIZE, TEXTURE_SIZE, 1);
 				break;
 
-			case 0x21:	// diagonal /
+			case 0x21:	// diagonal \/
+				floors->blocks[idx]->setTextureWall(
+					gfxGetTexture(wood), TEXTURE_SIZE, TEXTURE_SIZE, 1);
+				floors->blocks[idx]->setTextureFloor(
+					gfxGetTexture(grass), TEXTURE_SIZE, TEXTURE_SIZE, 2);
+				floors->blocks[idx]->setType(MBTYPE_WALL_DIAG_TL2BR);
+				break;
+
+			case 0x22:	// diagonal /
 				floors->blocks[idx]->setTextureWall(
 					gfxGetTexture(wood), TEXTURE_SIZE, TEXTURE_SIZE, 1);
 				floors->blocks[idx]->setTextureFloor(

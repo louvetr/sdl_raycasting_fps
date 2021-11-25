@@ -84,7 +84,7 @@ int renderRayTextured(SDL_Renderer *renderer,
 
 		pixelIdx = (pixelIdx * tileFactor) % (128 * 128 * 4); // TODO: store then insert here the texture size
 
-		if (map->floors[0].blocks[block_idx]->textureWall == NULL) { // TODO: remove ?
+		if (block_idx < 0 || map->floors[0].blocks[block_idx]->textureWall == NULL) { // TODO: remove ?
 			i++;
 			continue;
 		}
@@ -93,15 +93,21 @@ int renderRayTextured(SDL_Renderer *renderer,
 		int g = map->floors[0].blocks[block_idx]->textureWall[pixelIdx + 1];
 		int b = map->floors[0].blocks[block_idx]->textureWall[pixelIdx + 0];
 
-		switch(colliType) {
-			case COLLISION_RAY_HORIZONTAL:
-				SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
+		switch (colliType) {
+		case COLLISION_RAY_HORIZONTAL:
+			SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
 			break;
-			case COLLISION_RAY_VERTICAL:
-				SDL_SetRenderDrawColor(renderer, r * 3 / 4, g * 3 / 4, b * 3 / 4, 0xFF);
+		case COLLISION_RAY_DIAG_TL2BR:
+			SDL_SetRenderDrawColor(renderer, r * 9 / 10, g * 9 / 10, b * 9 / 10, 0xFF);
 			break;
-			default:
-				SDL_SetRenderDrawColor(renderer, r * 7 / 8, g * 7 / 8, b * 7 / 8, 0xFF);
+		case COLLISION_RAY_DIAG_BL2TR:
+			SDL_SetRenderDrawColor(renderer, r * 8 / 10, g * 8 / 10, b * 8 / 10, 0xFF);
+			break;
+		case COLLISION_RAY_VERTICAL:
+			SDL_SetRenderDrawColor(renderer, r * 7 / 10, g * 7 / 10, b * 7 / 10, 0xFF);
+			break;
+		default:
+			SDL_SetRenderDrawColor(renderer, r * 6 / 10, g * 7 / 8, b * 7 / 8, 0xFF);
 		}
 
 		SDL_RenderDrawPoint(renderer, X + Xoffset, toDrawY);
@@ -168,7 +174,7 @@ int renderRayTextured(SDL_Renderer *renderer,
 
 int renderMinimap(SDL_Renderer *renderer, Player *player, mapObj *map, Uint8 map_scale)
 {
-	Uint8 alpha = 0xA0;
+	Uint8 alpha = 0x40;
 
 	SDL_Rect rect;
 	rect.x = 0;
@@ -253,7 +259,20 @@ int renderMinimapRay(SDL_Renderer *renderer,
 		     Uint8 map_scale)
 {
 
-	SDL_SetRenderDrawColor(renderer, 0x20, 0x20, 0x20, 0x00);
+	switch (colliType) {
+	case COLLISION_RAY_DIAG_BL2TR:
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+		break;
+	case COLLISION_RAY_HORIZONTAL:
+		SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0x00);
+		break;
+	case COLLISION_RAY_VERTICAL:
+		SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0x00);
+		break;
+	default:
+		SDL_SetRenderDrawColor(renderer, 0x20, 0x20, 0x20, 0x00);
+	}
+
 	if (colliType != COLLISION_RAY_NONE)
 		SDL_RenderDrawLine(renderer,
 				   player->getX() / map_scale,

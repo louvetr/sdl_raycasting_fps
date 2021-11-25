@@ -132,7 +132,7 @@ int main(int argc, char** argv)
     uint32_t time_cpu = 4;
     uint32_t opcode_nb = 0;
 
-    int minimap_scale = 4;
+    int minimap_scale = 5;
 
     mapObj map = mapObj(MAP_WIDTH, MAP_HEIGHT, 1);
     mapFloor floor = mapFloor(MAP_WIDTH, MAP_HEIGHT);

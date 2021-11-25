@@ -19,6 +19,7 @@
 #define PI2     6.283185f
 
 #define BLOCK_SIZE  64
+#define BLOCK_SIZE_DIAG  90.509f
 #define TEXTURE_SIZE  128
 
 /*const int SCREEN_WIDTH_VRAM = 1024;
